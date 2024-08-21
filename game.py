@@ -1,6 +1,6 @@
-import pygame
 from pygame.locals import *
 from sys import exit
+import pygame
 import random
 import button
 
@@ -18,7 +18,7 @@ screen_height = 400 + bottom_pannel
 screen = pygame.display.set_mode((screen_width, screen_height))
 programIcon = pygame.image.load("midia/Icons/espadas.png").convert_alpha()
 
-# game variables
+# ======== Game Variables ========
 current_fighter = 1
 total_fighters = 3
 action_cooldown = 0
@@ -30,65 +30,68 @@ clicked = False
 game_over = 0
 
 
+# ======== Text Variables ========
 font = pygame.font.SysFont("Times New Roman", 26)
-
 red = (255, 0, 0)
 green = (0, 255, 0)
 
 
+# ======== Icon and Title ========
 pygame.display.set_caption("Battle Game")
 pygame.display.set_icon(programIcon)
 
 
 # ======== Load Images ========
 
-# Background Image
+# Background
 background_img = pygame.image.load("midia/Background/background.png").convert_alpha()
 
-# Panel Image
+# Panel
 panel_img = pygame.image.load("midia/Icons/panel.png").convert_alpha()
 
+# Sword
 sword_img = pygame.image.load("midia/Icons/sword.png").convert_alpha()
 
-# button image
+# Button
 potion_img = pygame.image.load("midia/Icons/potion.png").convert_alpha()
 
+# Restart
 restart_img = pygame.image.load("midia/Icons/restart.png").convert_alpha()
 
-# load victory and defeat
+# Victory
 victory_img = pygame.image.load("midia/Icons/victory.png").convert_alpha()
+
+# Defeat
 defeat_img = pygame.image.load("midia/Icons/defeat.png").convert_alpha()
 
 
 # ======== Functions ========
 
-# Drawing text
 
-
+# Draw text
 def draw_text(text, font, text_col, x, y):
     img = font.render(text, True, text_col)
     screen.blit(img, (x, y))
 
 
-# Background
+# Draw Background
 def draw_bg():
     screen.blit(background_img, (0, 0))
 
 
-# Panel
+# Draw Panel
 def draw_panel():
-    # rect
     screen.blit(panel_img, (0, screen_height - bottom_pannel))
 
     draw_text(
-        f"{knight.name} HP: {knight.hp}",
+        f"{hero.name} HP: {hero.hp}",
         font,
         red,
         100,
         screen_height - bottom_pannel + 10,
     )
 
-    for count, i in enumerate(bandit_list):
+    for count, i in enumerate(enemy_list):
         draw_text(
             f"{i.name} HP: {i.hp}",
             font,
@@ -98,7 +101,10 @@ def draw_panel():
         )
 
 
-# Fighter
+# ======== Classes ========
+
+
+# Fighter (Base for player and enemy)
 class Fighter:
     def __init__(self, x, y, name, max_hp, strength, potions):
         self.name = name
@@ -112,7 +118,8 @@ class Fighter:
         self.frame_index = 0
         self.action = 0  # 0: idle 1: attack 2: hurt 3: death
         self.update_time = pygame.time.get_ticks()
-        # load idle images
+
+        # Load idle images
         temp_list = []
         for i in range(8):
             img = pygame.image.load(f"midia/{self.name}/Idle/{i}.png")
@@ -121,7 +128,8 @@ class Fighter:
             )
             temp_list.append(img)
         self.animation_list.append(temp_list)
-        # load attack images
+
+        # Load attack images
         temp_list = []
         for i in range(8):
             img = pygame.image.load(f"midia/{self.name}/Attack/{i}.png")
@@ -130,7 +138,8 @@ class Fighter:
             )
             temp_list.append(img)
         self.animation_list.append(temp_list)
-        # laod hurt image
+
+        # Load hurt images
         temp_list = []
         for i in range(3):
             img = pygame.image.load(f"midia/{self.name}/Hurt/{i}.png")
@@ -140,7 +149,7 @@ class Fighter:
             temp_list.append(img)
         self.animation_list.append(temp_list)
 
-        # laod death image
+        # Load death images
         temp_list = []
         for i in range(10):
             img = pygame.image.load(f"midia/{self.name}/Death/{i}.png")
@@ -154,6 +163,7 @@ class Fighter:
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
 
+    # Update
     def update(self):
         animation_cooldown = 100
 
@@ -167,16 +177,43 @@ class Fighter:
             else:
                 self.idle()
 
+    # Set variables to Attack animation and deal damage
+    def attack(self, target):
+
+        # Deal damage to enemy
+        rand = random.randint(-5, 5)
+        damage = self.strength + rand
+        target.hp -= damage
+
+        # Enemy hurt animation
+        target.hurt()
+
+        # Check if target died
+        if target.hp < 1:
+            target.hp = 0
+            target.alive = False
+            target.death()
+        damage_text = DamageText(target.rect.centerx, target.rect.y, str(damage), red)
+        damage_text_group.add(damage_text)
+
+        # Set variables to Attack animation
+        self.action = 1
+        self.frame_index = 0
+        self.update_time = pygame.time.get_ticks()
+
+    # Set variables to Idle animation
     def idle(self):
         self.action = 0
         self.frame_index = 0
         self.update_time = pygame.time.get_ticks()
 
+    # # Set variables to Hurt animation
     def hurt(self):
         self.action = 2
         self.frame_index = 0
         self.update_time = pygame.time.get_ticks()
 
+    # Set variables to Death animation
     def death(self):
         self.action = 3
         self.frame_index = 0
@@ -190,31 +227,11 @@ class Fighter:
         self.action = 0
         self.update_time = pygame.time.get_ticks()
 
-    def attack(self, target):
-        # deal damage to enemy
-        rand = random.randint(-5, 5)
-        damage = self.strength + rand
-
-        target.hp -= damage
-        # hurt animation
-        target.hurt()
-
-        # check if target died
-        if target.hp < 1:
-            target.hp = 0
-            target.alive = False
-            target.death()
-        damage_text = DamageText(target.rect.centerx, target.rect.y, str(damage), red)
-        damage_text_group.add(damage_text)
-
-        self.action = 1
-        self.frame_index = 0
-        self.update_time = pygame.time.get_ticks()
-
     def draw(self):
         screen.blit(self.image, self.rect)
 
 
+# Health Bar (for player and enemy)
 class HealthBar:
 
     def __init__(self, x, y, hp, max_hp):
@@ -225,10 +242,11 @@ class HealthBar:
 
     def draw(self, hp):
 
-        # update with new health
+        # Update with new health
         self.hp = hp
         ratio = self.hp / self.max_hp
 
+        # Calculate health ratio
         pygame.draw.rect(screen, red, (self.x, self.y, 150, 20))
         pygame.draw.rect(screen, green, (self.x, self.y, 150 * ratio, 20))
 
@@ -243,39 +261,48 @@ class DamageText(pygame.sprite.Sprite):
         self.counter = 0
 
     def update(self):
-        # move damage text up
+        # Move damage text up
         self.rect.y -= 1
-        # delete the text after a few seconds
+        # Delete the text after a few seconds
         self.counter += 1
         if self.counter > 30:
             self.kill()
 
 
+# ======== Object Instances ========
+
 damage_text_group = pygame.sprite.Group()
 
-knight = Fighter(200, 260, "Knight", 30, 10, 3)
-bandit1 = Fighter(550, 270, "Bandit", 10, 6, 1)
-bandit2 = Fighter(700, 270, "Bandit", 20, 6, 1)
+# Hero
+hero = Fighter(200, 260, "Knight", 30, 10, 3)
 
-bandit_list = []
-bandit_list.append(bandit1)
-bandit_list.append(bandit2)
+# Enemy
+enemy1 = Fighter(550, 270, "Bandit", 10, 6, 1)
+enemy2 = Fighter(700, 270, "Bandit", 20, 6, 1)
 
-knight_health_bar = HealthBar(
-    100, screen_height - bottom_pannel + 40, knight.hp, knight.max_hp
+enemy_list = []
+enemy_list.append(enemy1)
+enemy_list.append(enemy2)
+
+# Health bar
+hero_health_bar = HealthBar(
+    100, screen_height - bottom_pannel + 40, hero.hp, hero.max_hp
 )
-bandit1_health_bar = HealthBar(
-    550, screen_height - bottom_pannel + 40, bandit1.hp, bandit1.max_hp
+enemy1_health_bar = HealthBar(
+    550, screen_height - bottom_pannel + 40, enemy1.hp, enemy1.max_hp
 )
-bandit2_health_bar = HealthBar(
-    550, screen_height - bottom_pannel + 100, bandit2.hp, bandit2.max_hp
+enemy2_health_bar = HealthBar(
+    550, screen_height - bottom_pannel + 100, enemy2.hp, enemy2.max_hp
 )
 
-# Create Buttons
+# Buttons
 potion_button = button.Button(
     screen, 100, screen_height - bottom_pannel + 70, potion_img, 64, 64
 )
 restart_button = button.Button(screen, 330, 120, restart_img, 120, 30)
+
+
+# ======== Main Loop ========
 
 while True:
 
@@ -283,138 +310,146 @@ while True:
 
     screen.fill((0, 0, 0))
 
+    # Draw background
     draw_bg()
+
+    # Draw panel
     draw_panel()
-    knight_health_bar.draw(knight.hp)
-    bandit1_health_bar.draw(bandit1.hp)
-    bandit2_health_bar.draw(bandit2.hp)
+    hero_health_bar.draw(hero.hp)
+    enemy1_health_bar.draw(enemy1.hp)
+    enemy2_health_bar.draw(enemy2.hp)
 
-    knight.update()
-    knight.draw()
-    for bandit in bandit_list:
-        bandit.update()
-        bandit.draw()
+    # Draw fighters
+    hero.update()
+    hero.draw()
+    for enemy in enemy_list:
+        enemy.update()
+        enemy.draw()
 
-    # draw damage text
+    # Draw damage text
     damage_text_group.update()
     damage_text_group.draw(screen)
 
-    # control player actions
-    # reset actions variables
-
+    # Reset actions variables
     attack = False
     potion = False
     target = None
 
+    # Make sure mouse is visible
     pygame.mouse.set_visible(True)
 
     pos = pygame.mouse.get_pos()
-    for count, bandit in enumerate(bandit_list):
-        if bandit.rect.collidepoint(pos):
-            # hide mouse
+    for count, enemy in enumerate(enemy_list):
+        if enemy.rect.collidepoint(pos):
+            # Hide mouse
             pygame.mouse.set_visible(False)
-            # show sword
+            # Show sword as mouse cursor
             screen.blit(sword_img, pos)
-            if clicked == True and bandit.alive == True:
+            if clicked == True and enemy.alive == True:
                 attack = True
-                target = bandit_list[count]
+                target = enemy_list[count]
     if potion_button.draw():
         potion = True
-    # show potions remaining
-    draw_text(str(knight.potions), font, red, 150, screen_height - bottom_pannel + 70)
+
+    # Show potions remaining
+    draw_text(str(hero.potions), font, red, 150, screen_height - bottom_pannel + 70)
 
     if game_over == 0:
-        # player action
-        if knight.alive == True:
+        # Player action
+        if hero.alive == True:
             if current_fighter == 1:
                 action_cooldown += 1
                 if action_cooldown >= action_wait_time:
-                    # look for player action
-                    # attack
+
+                    # Look for player action
+
+                    # Attack
                     if attack == True and target != None:
-                        knight.attack(target)
+                        hero.attack(target)
                         current_fighter += 1
                         action_cooldown = 0
-                    # potion
+
+                    # Potion
                     if potion == True:
-                        if knight.potions > 0:
-                            # check heal beyond max helth
-                            if knight.max_hp - knight.hp > potion_effect:
+                        if hero.potions > 0:
+                            # Check heal beyond max helth
+                            if hero.max_hp - hero.hp > potion_effect:
                                 heal_amount = potion_effect
                             else:
-                                heal_amount = knight.max_hp - knight.hp
-                            knight.hp += heal_amount
+                                heal_amount = hero.max_hp - hero.hp
+                            hero.hp += heal_amount
                             damage_text = DamageText(
-                                knight.rect.centerx,
-                                knight.rect.y,
+                                hero.rect.centerx,
+                                hero.rect.y,
                                 str(heal_amount),
                                 green,
                             )
                             damage_text_group.add(damage_text)
-                            knight.potions -= 1
+                            hero.potions -= 1
                             current_fighter += 1
                             action_cooldown = 0
         else:
             game_over = -1
 
-        # enemy action
-        for count, bandit in enumerate(bandit_list):
+        # Enemy action
+        for count, enemy in enumerate(enemy_list):
             if current_fighter == 2 + count:
-                if bandit.alive:
+                if enemy.alive:
                     action_cooldown += 1
                     if action_cooldown >= action_wait_time:
-                        # cheack if bandit need to heal
-                        if (bandit.hp / bandit.max_hp) < 0.5 and bandit.potions > 0:
-                            # check heal beyond max helth
-                            if bandit.max_hp - bandit.hp > potion_effect:
+                        # Cheack if enemy need to heal
+                        if (enemy.hp / enemy.max_hp) < 0.5 and enemy.potions > 0:
+                            # Check heal beyond max helth
+                            if enemy.max_hp - enemy.hp > potion_effect:
                                 heal_amount = potion_effect
                             else:
-                                heal_amount = bandit.max_hp - bandit.hp
-                            bandit.hp += heal_amount
+                                heal_amount = enemy.max_hp - enemy.hp
+                            enemy.hp += heal_amount
                             damage_text = DamageText(
-                                bandit.rect.centerx,
-                                bandit.rect.y,
+                                enemy.rect.centerx,
+                                enemy.rect.y,
                                 str(heal_amount),
                                 green,
                             )
                             damage_text_group.add(damage_text)
-                            bandit.potions -= 1
+                            enemy.potions -= 1
                             current_fighter += 1
                             action_cooldown = 0
                         else:
-                            # attack
-                            bandit.attack(knight)
+                            # Attack
+                            enemy.attack(hero)
                             current_fighter += 1
                             action_cooldown = 0
                 else:
                     current_fighter += 1
 
+        # If all fighters have had a turn then reset
         if current_fighter > total_fighters:
             current_fighter = 1
 
-    # check if all bandits are dead
-    alive_bandits = 0
-    for bandit in bandit_list:
-        if bandit.alive == True:
-            alive_bandits += 1
-    if alive_bandits == 0:
+    # Check if all enemies are dead
+    alive_enemies = 0
+    for enemy in enemy_list:
+        if enemy.alive == True:
+            alive_enemies += 1
+    if alive_enemies == 0:
         game_over = 1
 
-    # check if game is over
-
+    # Check if game is over
     if game_over != 0:
         if game_over == 1:
             screen.blit(victory_img, (250, 50))
         if game_over == -1:
             screen.blit(defeat_img, (290, 50))
         if restart_button.draw():
-            knight.reset()
-            for bandit in bandit_list:
-                bandit.reset()
+            hero.reset()
+            for enemy in enemy_list:
+                enemy.reset()
             current_fighter = 1
             action_cooldown
             game_over = 0
 
+    # Quiting the game
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
