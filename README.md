@@ -5,8 +5,25 @@ Repositorio para modificar o jogo do [tutorial](https://www.youtube.com/watch?v=
 # Planos
 - Adicionar escolha de heroi
 - Adicionar mais inimigos
-- Adicionar moedas
+- Adicionar funções aos npcs
+    - Ferreiro
+        - Melhorar força
+    - Comerciante
+        - Comprar poções
+- Organizar o codigo
+- Melhorar a logica das moedas
+- Arrumar o cursor
+- Adicionar outro cenario de batalha
+    - Cada cenario um tipo de inimigo
+- Menu principal
+
+
+# Feito
 - Adicionar npcs
     - Ferreiro
     - Comerciante
-- Organizar o codigo
+    - Cachorro
+    - Mendingo
+ - Codigo base
+ - Adicionar moedas
+ - Opção de ir para a cidade
