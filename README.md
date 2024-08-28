@@ -8,27 +8,19 @@ Código base: [video](https://www.youtube.com/watch?v=Vlolidaoiak&list=PLjcN1Eyu
 
 
 # Planos
-- Transferir Planos/Feitos para issues do github
-- *** Arumar o Esqueleto ***
-- Adicionar escolha de heroi
-- Adicionar mais inimigos
+- Menu principal
 - Adicionar funções aos npcs
     - Ferreiro
         - Melhorar força
     - Comerciante
         - Comprar poções
+- Adicionar escolha de heroi
+- Adicionar mais inimigos
 - Organizar o codigo
 - Melhorar a logica das moedas
-- Adicionar outro cenario de batalha
-    - Cada cenario um tipo de inimigo
-- Menu principal
-- Botao de resetar na caverna
-- Deixar a classse Fighter generica
-    - Remover a classe esqueleto
-- Ataque do esqueleto curando?
+- Botão de resetar na caverna
 - Espaço invisivel das sprites do esqueleto muito grande(hitbox grande)
-- Arrumar icone do mapa voltando pra cidade
-
+- Resetar o turno quando mudar de mapa
 
 # Feito
 - Adicionar npcs
@@ -40,3 +32,4 @@ Código base: [video](https://www.youtube.com/watch?v=Vlolidaoiak&list=PLjcN1Eyu
  - Adicionar moedas
  - Opção de ir para a cidade
  - Arrumar o cursor
+ - Mapa funcionando
