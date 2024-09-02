@@ -6,9 +6,6 @@ import button
 
 pygame.init()
 
-# FPS
-clock = pygame.time.Clock()
-fps = 30
 
 # ======== Game Window ========
 bottom_pannel = 150
@@ -18,14 +15,21 @@ screen_height = 400 + bottom_pannel
 screen = pygame.display.set_mode((screen_width, screen_height))
 programIcon = pygame.image.load("midia/Icons/espadas.png").convert_alpha()
 
-# ======== Map =========
+# ======== FPS ========
+clock = pygame.time.Clock()
+fps = 30
 
-# Criar a superfície do mapa
-map_width, map_height = 400, 300
-map_surface = pygame.Surface((map_width, map_height))
+# ======== Title ========
+pygame.display.set_caption("Battle Game")
+pygame.display.set_icon(programIcon)
 
-# Variável de controle para mostrar ou esconder o mapa
-show_map = False
+# ======== Text Variables ========
+font = pygame.font.SysFont("Times New Roman", 26)
+red = (255, 0, 0)
+green = (0, 255, 0)
+blue = (0, 0, 255)
+white = (255, 255, 255)
+black = (0, 0, 0)
 
 # ======== Game Variables ========
 current_fighter = 1
@@ -38,48 +42,9 @@ potion_effect = 15
 clicked = False
 game_over = 0
 
-# ======== Text Variables ========
-font = pygame.font.SysFont("Times New Roman", 26)
-red = (255, 0, 0)
-green = (0, 255, 0)
-blue = (0, 0, 255)
-white = (255, 255, 255)
-black = (0, 0, 0)
 
+# ======== Load Icons ========
 
-# ======== Icon and Title ========
-pygame.display.set_caption("Battle Game")
-pygame.display.set_icon(programIcon)
-
-
-# ======== Load Images ========
-
-# ======== Background ========
-
-# Background
-background_forest_img = pygame.image.load(
-    "midia/Background/background_forest.png"
-).convert_alpha()
-
-background_city_img = pygame.image.load(
-    "midia/Background/background_city.png"
-).convert_alpha()
-
-background_cave_img = pygame.image.load(
-    "midia/Background/background_cave.png"
-).convert_alpha()
-
-background_store_img = pygame.image.load(
-    "midia/Background/background_store.png"
-).convert_alpha()
-
-background_forge_img = pygame.image.load(
-    "midia/Background/background_forge.png"
-).convert_alpha()
-
-background_map_img = pygame.image.load("midia/Background/background_map.png")
-
-# ======== Icons ========
 # Panel
 panel_img = pygame.image.load("midia/Icons/panel.png").convert_alpha()
 
@@ -107,10 +72,13 @@ cave_img = pygame.image.load("midia/Icons/cave.png").convert_alpha()
 # Potion Store
 potion_plus_img = pygame.image.load("midia/Icons/potion_plus.png").convert_alpha()
 
+# Potion buy
+potion_plus_b_img = pygame.image.load("midia/Icons/potion_plus2.png").convert_alpha()
+
 # Forge
 forge_img = pygame.image.load("midia/Icons/forge.png").convert_alpha()
 
-# Go Back
+# Return
 return_img = pygame.image.load("midia/Icons/return.png").convert_alpha()
 
 # Restart
@@ -126,35 +94,12 @@ defeat_img = pygame.image.load("midia/Icons/defeat.png").convert_alpha()
 # ======== Functions ========
 
 
-# ======== Draw Backgrounds ========
-# Forest
-def draw_bg():
-    screen.blit(background_forest_img, (0, 0))
-
-
-# City
-def draw_bg_city():
-    screen.blit(background_city_img, (0, 0))
-
-
-# Cave
-def draw_bg_cave():
-    screen.blit(background_cave_img, (0, 0))
-
-
-# Store
-def draw_bg_store():
-    screen.blit(background_store_img, (0, 0))
-
-
-# Forge
-def draw_bg_forge():
-    screen.blit(background_forge_img, (0, 0))
-
-
-# Map
-def draw_bg_map():
-    screen.blit(background_map_img, (0, 0))
+# Draw Background
+def draw_bg(place):
+    screen.blit(
+        pygame.image.load(f"midia/Background/background_{place}.png").convert_alpha(),
+        (0, 0),
+    )
 
 
 # Draw text
@@ -164,7 +109,7 @@ def draw_text(text, font, text_col, x, y):
 
 
 # Draw Panel
-def draw_panel(place="city"):
+def draw_panel(place):
 
     screen.blit(panel_img, (0, screen_height - bottom_pannel))
 
@@ -176,24 +121,20 @@ def draw_panel(place="city"):
         screen_height - bottom_pannel + 10,
     )
 
+    list = []
     if place == "forest":
-        for count, i in enumerate(enemy_list):
-            draw_text(
-                f"{i.name} HP: {i.hp}",
-                font,
-                red,
-                550,
-                (screen_height - bottom_pannel + 10) + count * 60,
-            )
+        list = enemy_list
     elif place == "cave":
-        for count, i in enumerate(enemy_list2):
-            draw_text(
-                f"{i.name} HP: {i.hp}",
-                font,
-                red,
-                550,
-                (screen_height - bottom_pannel + 10) + count * 60,
-            )
+        list = enemy_list2
+
+    for count, i in enumerate(list):
+        draw_text(
+            f"{i.name} HP: {i.hp}",
+            font,
+            red,
+            550,
+            (screen_height - bottom_pannel + 10) + count * 60,
+        )
 
 
 # Draw gold coins
@@ -235,7 +176,6 @@ class Fighter:
         self.frame_index = 0
         self.action = 0  # 0: idle 1: attack 2: hurt 3: death
         self.update_time = pygame.time.get_ticks()
-
         self.scale_factor = scale_factor
 
         # Load idle images
@@ -614,6 +554,9 @@ enemy4_health_bar = HealthBar(
 potion_button = button.Button(
     screen, 100, screen_height - bottom_pannel + 70, potion_img, 64, 64
 )
+potion_plus_button = button.Button(
+    screen, 600, screen_height - bottom_pannel + 70, potion_plus_b_img, 64, 64
+)
 
 restart_button = button.Button(screen, 330, 120, restart_img, 120, 30)
 
@@ -635,18 +578,21 @@ def menu():
         screen.fill(black)
 
 
+def basic(place):
+    pygame.mouse.set_visible(True)
+    screen.fill(black)
+    clock.tick(fps)
+
+    draw_bg(place)
+    draw_panel(place)
+
+    gold()
+
+
 def map():
     while True:
 
-        pygame.mouse.set_visible(True)
-        screen.fill(black)
-        clock.tick(fps)
-
-        draw_bg_map()
-
-        draw_panel("city")
-
-        gold()
+        basic("map")
 
         if forest_button.draw():
             forest()
@@ -679,15 +625,7 @@ def map():
 def city():
     while True:
 
-        pygame.mouse.set_visible(True)
-        screen.fill(black)
-        clock.tick(fps)
-
-        draw_bg_city()
-
-        draw_panel("city")
-
-        gold()
+        basic("city")
 
         if map_button.draw():
             map()
@@ -747,15 +685,12 @@ def cave():
 
     while True:
 
-        pygame.mouse.set_visible(True)
-        screen.fill(black)
-        clock.tick(fps)
+        basic("cave")
 
-        draw_bg_cave()
-
-        draw_panel("cave")
-
-        gold()
+        # Reset actions variables
+        attack = False
+        potion = False
+        target = None
 
         if map_button.draw():
             map()
@@ -779,11 +714,6 @@ def cave():
         # Draw damage text
         damage_text_group.update()
         damage_text_group.draw(screen)
-
-        # Reset actions variables
-        attack = False
-        potion = False
-        target = None
 
         pos = pygame.mouse.get_pos()
         # Change mouse icon
@@ -891,7 +821,7 @@ def cave():
                 screen.blit(defeat_img, (290, 50))
             if restart_button.draw():
                 hero.reset()
-                for enemy in enemy_list:
+                for enemy in enemy_list2:
                     enemy.reset()
                 current_fighter = 1
                 action_cooldown
@@ -916,15 +846,12 @@ def forest():
 
     while True:
 
-        pygame.mouse.set_visible(True)
-        screen.fill(black)
-        clock.tick(fps)
+        basic("forest")
 
-        draw_bg()
-
-        draw_panel("forest")
-
-        gold()
+        # Reset actions variables
+        attack = False
+        potion = False
+        target = None
 
         if map_button.draw():
             map()
@@ -949,11 +876,6 @@ def forest():
         # Draw damage text
         damage_text_group.update()
         damage_text_group.draw(screen)
-
-        # Reset actions variables
-        attack = False
-        potion = False
-        target = None
 
         pos = pygame.mouse.get_pos()
         # Change mouse icon
@@ -996,6 +918,7 @@ def forest():
                                 else:
                                     heal_amount = hero.max_hp - hero.hp
                                 hero.hp += heal_amount
+                                hero.potions -= 1
                                 damage_text = DamageText(
                                     hero.rect.centerx,
                                     hero.rect.y,
@@ -1003,7 +926,6 @@ def forest():
                                     green,
                                 )
                                 damage_text_group.add(damage_text)
-                                hero.potions -= 1
                                 current_fighter += 1
                                 action_cooldown = 0
             else:
@@ -1083,21 +1005,18 @@ def forest():
 def store():
     while True:
 
-        pygame.mouse.set_visible(True)
-        screen.fill(black)
-        clock.tick(fps)
-
-        draw_bg_store()
-
-        draw_panel("city")
-
-        gold()
+        basic("store")
 
         if return_button.draw():
             city()
 
         if potion_button.draw():
             potion = True
+
+        if potion_plus_button.draw():
+            if hero.gold >= 5:
+                hero.gold -= 5
+                hero.potions += 1
 
         draw_text(str(hero.potions), font, red, 150, screen_height - bottom_pannel + 70)
 
@@ -1120,14 +1039,7 @@ def store():
 def forge():
     while True:
 
-        pygame.mouse.set_visible(True)
-        screen.fill(black)
-        clock.tick(fps)
-        draw_bg_forge()
-
-        draw_panel("city")
-
-        gold()
+        basic("forge")
 
         if return_button.draw():
             city()
