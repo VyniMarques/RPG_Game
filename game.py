@@ -81,6 +81,9 @@ forge_img = pygame.image.load("midia/Icons/forge.png").convert_alpha()
 # Return
 return_img = pygame.image.load("midia/Icons/return.png").convert_alpha()
 
+# Strength
+strength_img = pygame.image.load("midia/Icons/strength_plus.png").convert_alpha()
+
 # Restart
 restart_img = pygame.image.load("midia/Icons/restart.png").convert_alpha()
 
@@ -503,9 +506,60 @@ class GoldText(pygame.sprite.Sprite):
 
 damage_text_group = pygame.sprite.Group()
 
-# Hero
-hero = Fighter(200, 260, "Knight", 30, 10, 3, 5)
-hero_in_city = Fighter(280, 300, "Knight", 30, 10, 3, 4, scale_factor=2)
+# ======= Select Hero =======
+
+#hero = Fighter(200, 160, "Archer", 30, 10, 3, 5, 2.8, 12, 6, 19, 15)
+#hero_in_city = Fighter(280, 230, "Archer", 30, 10, 3, 4, scale_factor=2)
+
+hero = None
+hero_in_city = None
+def selecionarHeroi(hero_op):
+    global hero, hero_in_city, hero_health_bar, enemy1_health_bar, enemy2_health_bar, enemy3_health_bar, enemy4_health_bar
+    
+    print("Selecionando Heroi")
+
+    if hero_op == 0:
+        hero1 = Fighter(200, 260, "Knight", 30, 10, 3, 5)
+        hero_in_city1 = Fighter(280, 300, "Knight", 30, 10, 3, 4, scale_factor=2)
+    elif hero_op == 1:
+        hero1 = Fighter(200, 160, "Archer", 30, 10, 3, 5, 2.8, 12, 6, 19, 15)
+        hero_in_city1 = Fighter(280, 230, "Archer", 30, 10, 3, 4, scale_factor=2)
+    elif hero_op == 2:
+        hero1 = Fighter(200, 160, "Assasin", 30, 10, 3, 5, 2.8, 8, 6, 12, 6)
+        hero_in_city1 = Fighter(280, 225, "Assasin", 30, 10, 3, 4, 2, 8, 6, 12, 6)
+    elif hero_op == 3:
+        hero1 = Fighter(200, 165, "Monk", 30, 10, 3, 5, 3, 6, 6, 18, 6)
+        hero_in_city1 = Fighter(280, 235, "Monk", 30, 10, 3, 4, 2, 6, 6, 18, 6)
+    elif hero_op == 4:
+        hero1 = Fighter(200, 150, "Priestess", 30, 10, 3, 5, 3, 8, 7, 16, 7)
+        hero_in_city1 = Fighter(280, 220, "Priestess", 30, 10, 3, 4, 2, 8, 7, 16, 7)
+    elif hero_op == 5:
+        hero1 = Fighter(200, 150, "Mauler", 30, 10, 3, 5, 3, 8, 6, 15, 7)
+        hero_in_city1 = Fighter(280, 220, "Mauler", 30, 10, 3, 4, 2, 8, 6, 15, 7)
+    
+    
+
+    hero = hero1
+    hero_in_city = hero_in_city1
+    
+    print(hero.name)
+
+    hero_health_bar = HealthBar(
+    100, screen_height - bottom_pannel + 40, hero.hp, hero.max_hp
+    )
+    enemy1_health_bar = HealthBar(
+        550, screen_height - bottom_pannel + 40, enemy1.hp, enemy1.max_hp
+    )
+    enemy2_health_bar = HealthBar(
+        550, screen_height - bottom_pannel + 100, enemy2.hp, enemy2.max_hp
+    )
+    enemy3_health_bar = HealthBar(
+        550, screen_height - bottom_pannel + 40, enemy3.hp, enemy3.max_hp
+    )
+    enemy4_health_bar = HealthBar(
+        550, screen_height - bottom_pannel + 100, enemy4.hp, enemy4.max_hp
+    )
+
 
 # Npc
 blacksmith = Blacksmith(650, 310, "Blacksmith", 2.6)
@@ -534,21 +588,7 @@ enemy_list2.append(enemy3)
 enemy_list2.append(enemy4)
 
 # ======== Health bar ========
-hero_health_bar = HealthBar(
-    100, screen_height - bottom_pannel + 40, hero.hp, hero.max_hp
-)
-enemy1_health_bar = HealthBar(
-    550, screen_height - bottom_pannel + 40, enemy1.hp, enemy1.max_hp
-)
-enemy2_health_bar = HealthBar(
-    550, screen_height - bottom_pannel + 100, enemy2.hp, enemy2.max_hp
-)
-enemy3_health_bar = HealthBar(
-    550, screen_height - bottom_pannel + 40, enemy3.hp, enemy3.max_hp
-)
-enemy4_health_bar = HealthBar(
-    550, screen_height - bottom_pannel + 100, enemy4.hp, enemy4.max_hp
-)
+
 
 # ======== Buttons ========
 potion_button = button.Button(
@@ -557,7 +597,9 @@ potion_button = button.Button(
 potion_plus_button = button.Button(
     screen, 600, screen_height - bottom_pannel + 70, potion_plus_b_img, 64, 64
 )
-
+strength_plus_button = button.Button(
+    screen, 600, screen_height - bottom_pannel + 70, strength_img, 64, 64
+)
 restart_button = button.Button(screen, 330, 120, restart_img, 120, 30)
 
 city_button = button.Button(screen, 30, 100, city_img, 64, 64)
@@ -571,11 +613,103 @@ map_button = button.Button(screen, 0, 30, map_img, 64, 64)
 return_button = button.Button(screen, 0, 80, return_img, 64, 64)
 
 
+
+#===
+
+knight_img = pygame.image.load("midia/Characters/knight.png").convert_alpha()
+
+archer_img = pygame.image.load("midia/Characters/archer.png").convert_alpha()
+
+assasin_img = pygame.image.load("midia/Characters/assasin.png").convert_alpha()
+
+monk_img = pygame.image.load("midia/Characters/monk.png").convert_alpha()
+
+priestess_img = pygame.image.load("midia/Characters/priestess.png").convert_alpha()
+
+mauler_img = pygame.image.load("midia/Characters/mauler.png").convert_alpha()
+
+
+
+knight_button = button.Button(screen, 100, 50, knight_img, 110, 110)
+
+archer_button = button.Button(screen, 100, 180, archer_img, 110, 110)
+
+assasin_button = button.Button(screen, 350, 50, assasin_img, 110, 110)
+
+monk_button = button.Button(screen, 350, 180, monk_img, 110, 110)
+
+priestess_button = button.Button(screen, 600, 50, priestess_img, 110, 110)
+
+mauler_button = button.Button(screen, 600, 180, mauler_img, 110, 110)
+
+
+
+
+
+
+
+
+
+
+
+
 # ======== Main Loop ========
-def menu():
+def menu(selecionarHeroi):
+
+    #selecionarHeroi(2)
+
     while True:
 
+
         screen.fill(black)
+        pygame.mouse.set_visible(True)
+        draw_bg("map")
+        screen.blit(panel_img, (0, screen_height - bottom_pannel))
+        clock.tick(fps)
+        #draw_text("PLAY", font, white, 400, 200)
+        
+        if knight_button.draw():
+            selecionarHeroi(0)
+            city()
+
+        if archer_button.draw():
+            selecionarHeroi(1)
+            city()
+
+        if assasin_button.draw():
+            selecionarHeroi(2)
+            city()
+
+        if monk_button.draw():
+            selecionarHeroi(3)
+            city()
+
+        if priestess_button.draw():
+            selecionarHeroi(4)
+            city()
+
+        if mauler_button.draw():
+            selecionarHeroi(5)
+            city()
+        
+        
+
+
+        
+
+        
+
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                clicked = True
+            else:
+                clicked = False
+
+        pygame.display.update()
+
 
 
 def basic(place):
@@ -826,6 +960,7 @@ def cave():
                 current_fighter = 1
                 action_cooldown
                 game_over = 0
+                city()
 
         # Quiting the game
         for event in pygame.event.get():
@@ -988,6 +1123,7 @@ def forest():
                 current_fighter = 1
                 action_cooldown
                 game_over = 0
+                city()
 
         for event in pygame.event.get():
             # Quiting the game
@@ -1047,6 +1183,11 @@ def forge():
         if potion_button.draw():
             potion = True
 
+        if strength_plus_button.draw():
+            if hero.gold >= 10:
+                hero.gold -= 10
+                hero.strength += 1
+
         draw_text(str(hero.potions), font, red, 150, screen_height - bottom_pannel + 70)
 
         blacksmith_city.update()
@@ -1065,5 +1206,4 @@ def forge():
 
         pygame.display.update()
 
-
-city()
+menu(selecionarHeroi)
