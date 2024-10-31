@@ -10,14 +10,14 @@ Código base: [video](https://www.youtube.com/watch?v=Vlolidaoiak&list=PLjcN1Eyu
 # Planos
 - Dividir o codigo em módulos
 - Menu principal
-- Adicionar funções aos npcs
-    - Ferreiro
-        - Melhorar força
+    - Melhorar o Menu
 - Adicionar escolha de heroi
+    - Adicionar opção de escolha no menu
+    - Varias moedas, poções e força de cada heroi
 - Adicionar mais inimigos
 - Organizar o codigo
 - Melhorar a logica das moedas
-- Botão de resetar na caverna
+- Melhorar a logica de reset
 - Espaço invisivel das sprites do esqueleto muito grande(hitbox grande)
 - Resetar o turno quando mudar de mapa
 - Manter as poções compradas ao resetar
@@ -26,6 +26,7 @@ Código base: [video](https://www.youtube.com/watch?v=Vlolidaoiak&list=PLjcN1Eyu
 # Feito
 - Adicionar npcs
     - Ferreiro
+        - Melhorar força
     - Comerciante
         - Comprar poções
     - Cachorro
@@ -35,3 +36,5 @@ Código base: [video](https://www.youtube.com/watch?v=Vlolidaoiak&list=PLjcN1Eyu
  - Opção de ir para a cidade
  - Arrumar o cursor
  - Mapa funcionando
+ - Adicionar menu
+ - Adicionar escolha de heroi
