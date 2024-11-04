@@ -35,7 +35,7 @@ black = (0, 0, 0)
 current_fighter = 1
 total_fighters = 3
 action_cooldown = 0
-action_wait_time = 90
+action_wait_time = 45
 attack = False
 potion = False
 potion_effect = 15
@@ -93,6 +93,18 @@ victory_img = pygame.image.load("midia/Icons/victory.png").convert_alpha()
 # Defeat
 defeat_img = pygame.image.load("midia/Icons/defeat.png").convert_alpha()
 
+# ======== Load Character Images ========
+knight_img = pygame.image.load("midia/Characters/knight.png").convert_alpha()
+
+archer_img = pygame.image.load("midia/Characters/archer.png").convert_alpha()
+
+assasin_img = pygame.image.load("midia/Characters/assasin.png").convert_alpha()
+
+monk_img = pygame.image.load("midia/Characters/monk.png").convert_alpha()
+
+priestess_img = pygame.image.load("midia/Characters/priestess.png").convert_alpha()
+
+mauler_img = pygame.image.load("midia/Characters/mauler.png").convert_alpha()
 
 # ======== Functions ========
 
@@ -181,6 +193,11 @@ class Fighter:
         self.update_time = pygame.time.get_ticks()
         self.scale_factor = scale_factor
 
+        self.image = pygame.Surface((50, 50))  # Placeholder para a imagem
+        self.image.fill((0, 255, 0))  # Verde para o placeholder
+        self.rect = self.image.get_rect(center=(x, y))
+        self.hitbox = pygame.Rect(self.rect.x-40, self.rect.y-40, 120, 140)
+
         # Load idle images
         temp_list = []
         for i in range(q_idle):
@@ -228,6 +245,7 @@ class Fighter:
     # Update
     def update(self):
         animation_cooldown = 100
+        
 
         self.image = self.animation_list[self.action][self.frame_index]
         if pygame.time.get_ticks() - self.update_time > animation_cooldown:
@@ -284,7 +302,7 @@ class Fighter:
 
     def reset(self):
         self.alive = True
-        self.potions = self.start_potions
+        #self.potions = self.start_potions
         self.hp = self.max_hp
         self.frame_index = 0
         self.action = 0
@@ -293,9 +311,13 @@ class Fighter:
     def draw(self):
         screen.blit(self.image, self.rect)
 
+        # Hitbox
+        #pygame.draw.rect(screen, (255, 0, 0), self.hitbox, 1)
+
     def dropGold(self, hero):
         amount = int(self.gold / random.randint(1, 3))
         self.gold -= amount
+        print("Gold Drop", self.gold)
         hero.gold += amount
 
 
@@ -507,17 +529,12 @@ class GoldText(pygame.sprite.Sprite):
 damage_text_group = pygame.sprite.Group()
 
 # ======= Select Hero =======
-
-#hero = Fighter(200, 160, "Archer", 30, 10, 3, 5, 2.8, 12, 6, 19, 15)
-#hero_in_city = Fighter(280, 230, "Archer", 30, 10, 3, 4, scale_factor=2)
-
-hero = None
-hero_in_city = None
-def selecionarHeroi(hero_op):
+def selectHero(hero_op):
     global hero, hero_in_city, hero_health_bar, enemy1_health_bar, enemy2_health_bar, enemy3_health_bar, enemy4_health_bar
     
-    print("Selecionando Heroi")
+    print("Selecting Hero")
 
+    #x, y, name, max_hp, strength, potions, gold, scale_factor, q_idle, q_hurt, q_death, q_attack
     if hero_op == 0:
         hero1 = Fighter(200, 260, "Knight", 30, 10, 3, 5)
         hero_in_city1 = Fighter(280, 300, "Knight", 30, 10, 3, 4, scale_factor=2)
@@ -537,13 +554,12 @@ def selecionarHeroi(hero_op):
         hero1 = Fighter(200, 150, "Mauler", 30, 10, 3, 5, 3, 8, 6, 15, 7)
         hero_in_city1 = Fighter(280, 220, "Mauler", 30, 10, 3, 4, 2, 8, 6, 15, 7)
     
-    
-
     hero = hero1
     hero_in_city = hero_in_city1
     
-    print(hero.name)
+    print("Heroi selected: " + hero.name)
 
+    # ======== Health bar ========
     hero_health_bar = HealthBar(
     100, screen_height - bottom_pannel + 40, hero.hp, hero.max_hp
     )
@@ -559,6 +575,18 @@ def selecionarHeroi(hero_op):
     enemy4_health_bar = HealthBar(
         550, screen_height - bottom_pannel + 100, enemy4.hp, enemy4.max_hp
     )
+    enemy5_health_bar = HealthBar(
+        550, screen_height - bottom_pannel + 40, enemy5.hp, enemy5.max_hp
+    )
+    enemy6_health_bar = HealthBar(
+        550, screen_height - bottom_pannel + 100, enemy6.hp, enemy6.max_hp
+    )
+    enemy7_health_bar = HealthBar(
+        550, screen_height - bottom_pannel + 40, enemy7.hp, enemy7.max_hp
+    )
+    enemy8_health_bar = HealthBar(
+        550, screen_height - bottom_pannel + 100, enemy8.hp, enemy8.max_hp
+    )
 
 
 # Npc
@@ -573,11 +601,18 @@ dog = Npc(550, 310, "Dog", 4, 2.6)
 beggar = Npc(145, 315, "Beggar", 5, 2.6)
 
 # Enemy
-enemy1 = Fighter(550, 270, "Bandit", 10, 6, 0, 20)
+enemy1 = Fighter(530, 270, "Bandit", 10, 6, 0, 20)
 enemy2 = Fighter(700, 270, "Bandit", 20, 6, 1, 5)
 
-enemy3 = Fighter(550, 270, "Skeleton", 20, 5, 0, 20, 2.4, 4, 4, 4, 8)
+enemy3 = Fighter(530, 270, "Skeleton", 20, 5, 0, 20, 2.4, 4, 4, 4, 8)
 enemy4 = Fighter(700, 270, "Skeleton", 10, 6, 0, 20, 2.4, 4, 4, 4, 8)
+
+enemy5 = Fighter(530, 270, "Goblin", 20, 5, 0, 20, 2.4, 4, 4, 4, 8)
+enemy6 = Fighter(700, 270, "Goblin", 10, 6, 0, 20, 2.4, 4, 4, 4, 8)
+
+enemy7 = Fighter(530, 270, "FlyingEye", 20, 5, 0, 20, 2.4, 4, 4, 4, 8)
+enemy8 = Fighter(700, 270, "FlyingEye", 10, 6, 0, 20, 2.4, 8, 4, 4, 8)
+
 
 enemy_list = []
 enemy_list.append(enemy1)
@@ -586,8 +621,6 @@ enemy_list.append(enemy2)
 enemy_list2 = []
 enemy_list2.append(enemy3)
 enemy_list2.append(enemy4)
-
-# ======== Health bar ========
 
 
 # ======== Buttons ========
@@ -613,91 +646,68 @@ map_button = button.Button(screen, 0, 30, map_img, 64, 64)
 return_button = button.Button(screen, 0, 80, return_img, 64, 64)
 
 
+# ======== Character selectors ========
+knight_button = button.Button(screen, 100, 50, knight_img, 165, 165)
 
-#===
+archer_button = button.Button(screen, 100, 200, archer_img, 165, 165)
 
-knight_img = pygame.image.load("midia/Characters/knight.png").convert_alpha()
+assasin_button = button.Button(screen, 330, 50, assasin_img, 165, 165)
 
-archer_img = pygame.image.load("midia/Characters/archer.png").convert_alpha()
+monk_button = button.Button(screen, 315, 215, monk_img, 170, 170)
 
-assasin_img = pygame.image.load("midia/Characters/assasin.png").convert_alpha()
+priestess_button = button.Button(screen, 550, 50, priestess_img, 165, 165)
 
-monk_img = pygame.image.load("midia/Characters/monk.png").convert_alpha()
-
-priestess_img = pygame.image.load("midia/Characters/priestess.png").convert_alpha()
-
-mauler_img = pygame.image.load("midia/Characters/mauler.png").convert_alpha()
+mauler_button = button.Button(screen, 550, 200, mauler_img, 165, 165)
 
 
-
-knight_button = button.Button(screen, 100, 50, knight_img, 110, 110)
-
-archer_button = button.Button(screen, 100, 180, archer_img, 110, 110)
-
-assasin_button = button.Button(screen, 350, 50, assasin_img, 110, 110)
-
-monk_button = button.Button(screen, 350, 180, monk_img, 110, 110)
-
-priestess_button = button.Button(screen, 600, 50, priestess_img, 110, 110)
-
-mauler_button = button.Button(screen, 600, 180, mauler_img, 110, 110)
-
-
-
-
-
-
-
-
-
-
-
+# ======== Loops ========
 
 # ======== Main Loop ========
 def menu(selecionarHeroi):
-
-    #selecionarHeroi(2)
-
+    clicked = False
+    pygame.mouse.set_visible(True)
     while True:
-
 
         screen.fill(black)
         pygame.mouse.set_visible(True)
         draw_bg("map")
         screen.blit(panel_img, (0, screen_height - bottom_pannel))
         clock.tick(fps)
-        #draw_text("PLAY", font, white, 400, 200)
         
+        draw_text("RPG Game", font, black, 350, 20)
+
         if knight_button.draw():
             selecionarHeroi(0)
+            pygame.time.delay(200)
             city()
 
         if archer_button.draw():
             selecionarHeroi(1)
+            pygame.time.delay(200)
             city()
 
         if assasin_button.draw():
             selecionarHeroi(2)
+            pygame.time.delay(200)
             city()
 
         if monk_button.draw():
             selecionarHeroi(3)
+            pygame.time.delay(200)
+            pygame.event.clear()
             city()
+            
 
         if priestess_button.draw():
             selecionarHeroi(4)
+            pygame.time.delay(200)
             city()
 
         if mauler_button.draw():
             selecionarHeroi(5)
+            pygame.time.delay(200)
             city()
-        
-        
 
-
-        
-
-        
 
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -711,9 +721,8 @@ def menu(selecionarHeroi):
         pygame.display.update()
 
 
-
 def basic(place):
-    pygame.mouse.set_visible(True)
+    #pygame.mouse.set_visible(True)
     screen.fill(black)
     clock.tick(fps)
 
@@ -724,6 +733,8 @@ def basic(place):
 
 
 def map():
+    clicked = False
+    pygame.mouse.set_visible(True)
     while True:
 
         basic("map")
@@ -757,9 +768,13 @@ def map():
 
 
 def city():
+    clicked = False
+    cursor_hidden = False
+    pygame.mouse.set_visible(True)
     while True:
 
         basic("city")
+        
 
         if map_button.draw():
             map()
@@ -782,23 +797,37 @@ def city():
         dog.draw()
 
         pos = pygame.mouse.get_pos()
+        # Controle do cursor e ícones
         if merchant.rect.collidepoint(pos):
-            # Hide mouse
-            pygame.mouse.set_visible(False)
-            # Show icon as mouse cursor
+            # Se o cursor está sobre o mercador e ainda está visível, esconda-o
+            if not cursor_hidden:
+                pygame.mouse.set_visible(False)
+                cursor_hidden = True  # Atualiza o estado do cursor
+
+            # Desenha o ícone de poção no lugar do cursor
             screen.blit(potion_plus_img, pos)
-            if clicked == True:
+            
+            # Abrir a loja ao clicar
+            if clicked:
                 store()
+
         elif blacksmith.rect.collidepoint(pos):
-            # Hide mouse
-            pygame.mouse.set_visible(False)
-            # Show icon as mouse cursor
+            if not cursor_hidden:
+                pygame.mouse.set_visible(False)
+                cursor_hidden = True
+
+            # Desenha o ícone de forja no lugar do cursor
             screen.blit(forge_img, pos)
-            if clicked == True:
+            
+            # Abrir a forja ao clicar
+            if clicked:
                 forge()
+        
         else:
-            # Mouse não está sobre um inimigo
-            pygame.mouse.set_visible(True)
+            # Se o cursor estava oculto, restaure-o
+            if cursor_hidden:
+                pygame.mouse.set_visible(True)
+                cursor_hidden = False 
 
         for event in pygame.event.get():
             # Quiting the game
@@ -815,8 +844,12 @@ def city():
 
 def cave():
 
-    global game_over, current_fighter, action_cooldown
+    hero_turn = 0
+    enemy_turn = 0
 
+    global game_over, current_fighter, action_cooldown
+    pygame.mouse.set_visible(True)
+    clicked = False
     while True:
 
         basic("cave")
@@ -835,6 +868,8 @@ def cave():
         draw_text(str(hero.potions), font, red, 150, screen_height - bottom_pannel + 70)
 
         hero_health_bar.draw(hero.hp)
+
+        # Logica da barra de vida ruim
         enemy3_health_bar.draw(enemy3.hp)
         enemy4_health_bar.draw(enemy4.hp)
 
@@ -851,7 +886,7 @@ def cave():
 
         pos = pygame.mouse.get_pos()
         # Change mouse icon
-        if enemy3.rect.collidepoint(pos) or enemy4.rect.collidepoint(pos):
+        if enemy3.hitbox.collidepoint(pos) or enemy4.hitbox.collidepoint(pos):
             # Hide mouse
             pygame.mouse.set_visible(False)
             # Show sword as mouse cursor
@@ -861,10 +896,17 @@ def cave():
 
         # Target enemy
         for count, enemy in enumerate(enemy_list2):
-            if enemy.rect.collidepoint(pos):
+            if enemy.hitbox.collidepoint(pos):
                 if clicked == True and enemy.alive == True:
                     attack = True
                     target = enemy_list2[count]
+
+        if hero_turn == 1:
+            print("Hero Turn")
+            
+        if enemy_turn == 1:
+            print("Enemy Turn")
+
 
         if game_over == 0:
             # Player action
@@ -872,14 +914,15 @@ def cave():
                 if current_fighter == 1:
                     action_cooldown += 1
                     if action_cooldown >= action_wait_time:
-
+                        hero_turn += 1
                         # Look for player action
-
+                        
                         # Attack
                         if attack == True and target != None:
                             hero.attack(target)
                             current_fighter += 1
                             action_cooldown = 0
+                            hero_turn = 0
 
                         # Potion
                         if potion == True:
@@ -900,6 +943,7 @@ def cave():
                                 hero.potions -= 1
                                 current_fighter += 1
                                 action_cooldown = 0
+                                hero_turn = 0
             else:
                 game_over = -1
 
@@ -908,6 +952,7 @@ def cave():
                 if current_fighter == 2 + count:
                     if enemy.alive:
                         action_cooldown += 1
+                        enemy_turn += 1
                         if action_cooldown >= action_wait_time:
                             # Cheack if enemy need to heal
                             if (enemy.hp / enemy.max_hp) < 0.5 and enemy.potions > 0:
@@ -927,11 +972,13 @@ def cave():
                                 enemy.potions -= 1
                                 current_fighter += 1
                                 action_cooldown = 0
+                                enemy_turn = 0
                             else:
                                 # Attack
                                 enemy.attack(hero)
                                 current_fighter += 1
                                 action_cooldown = 0
+                                enemy_turn = 0
                     else:
                         current_fighter += 1
 
@@ -976,9 +1023,14 @@ def cave():
 
 
 def forest():
+    
+    
+    hero_turn = 0
+    enemy_turn = 0
 
     global game_over, current_fighter, action_cooldown
-
+    pygame.mouse.set_visible(True)
+    clicked = False
     while True:
 
         basic("forest")
@@ -987,6 +1039,8 @@ def forest():
         attack = False
         potion = False
         target = None
+        
+        
 
         if map_button.draw():
             map()
@@ -1012,9 +1066,10 @@ def forest():
         damage_text_group.update()
         damage_text_group.draw(screen)
 
+        
         pos = pygame.mouse.get_pos()
         # Change mouse icon
-        if enemy1.rect.collidepoint(pos) or enemy2.rect.collidepoint(pos):
+        if enemy1.hitbox.collidepoint(pos) or enemy2.hitbox.collidepoint(pos):
             # Hide mouse
             pygame.mouse.set_visible(False)
             # Show sword as mouse cursor
@@ -1024,28 +1079,39 @@ def forest():
 
         # Target enemy
         for count, enemy in enumerate(enemy_list):
-            if enemy.rect.collidepoint(pos):
+            if enemy.hitbox.collidepoint(pos):
                 if clicked == True and enemy.alive == True:
                     attack = True
                     target = enemy_list[count]
+
+        if hero_turn == 1:
+            print("Hero Turn")
+            
+        if enemy_turn == 1:
+            print("Enemy Turn")
+        
 
         if game_over == 0:
             # Player action
             if hero.alive == True:
                 if current_fighter == 1:
                     action_cooldown += 1
+                    
                     if action_cooldown >= action_wait_time:
-
+                        hero_turn += 1
                         # Look for player action
-
+                        
                         # Attack
                         if attack == True and target != None:
+                            
                             hero.attack(target)
                             current_fighter += 1
                             action_cooldown = 0
+                            hero_turn = 0
 
                         # Potion
                         if potion == True:
+                            
                             if hero.potions > 0:
                                 # Check heal beyond max helth
                                 if hero.max_hp - hero.hp > potion_effect:
@@ -1063,6 +1129,7 @@ def forest():
                                 damage_text_group.add(damage_text)
                                 current_fighter += 1
                                 action_cooldown = 0
+                                hero_turn = 0
             else:
                 game_over = -1
 
@@ -1071,7 +1138,9 @@ def forest():
                 if current_fighter == 2 + count:
                     if enemy.alive:
                         action_cooldown += 1
+                        enemy_turn += 1
                         if action_cooldown >= action_wait_time:
+                            
                             # Cheack if enemy need to heal
                             if (enemy.hp / enemy.max_hp) < 0.5 and enemy.potions > 0:
                                 # Check heal beyond max helth
@@ -1090,11 +1159,13 @@ def forest():
                                 enemy.potions -= 1
                                 current_fighter += 1
                                 action_cooldown = 0
+                                enemy_turn = 0
                             else:
                                 # Attack
                                 enemy.attack(hero)
                                 current_fighter += 1
                                 action_cooldown = 0
+                                enemy_turn = 0
                     else:
                         current_fighter += 1
 
@@ -1139,6 +1210,8 @@ def forest():
 
 
 def store():
+    clicked = False
+    pygame.mouse.set_visible(True)
     while True:
 
         basic("store")
@@ -1153,6 +1226,7 @@ def store():
             if hero.gold >= 5:
                 hero.gold -= 5
                 hero.potions += 1
+                print("Potions:", hero.potions)
 
         draw_text(str(hero.potions), font, red, 150, screen_height - bottom_pannel + 70)
 
@@ -1173,6 +1247,8 @@ def store():
 
 
 def forge():
+    clicked = False
+    pygame.mouse.set_visible(True)
     while True:
 
         basic("forge")
@@ -1187,7 +1263,9 @@ def forge():
             if hero.gold >= 10:
                 hero.gold -= 10
                 hero.strength += 1
+                print("Strength:", hero.strength)
 
+        
         draw_text(str(hero.potions), font, red, 150, screen_height - bottom_pannel + 70)
 
         blacksmith_city.update()
@@ -1206,4 +1284,4 @@ def forge():
 
         pygame.display.update()
 
-menu(selecionarHeroi)
+menu(selectHero)
