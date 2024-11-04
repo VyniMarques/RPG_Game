@@ -8,20 +8,18 @@ Código base: [video](https://www.youtube.com/watch?v=Vlolidaoiak&list=PLjcN1Eyu
 
 
 # Planos
-- Dividir o codigo em módulos
+- Colocar a barra de vida junto da instancia de inimigo
+- Adicionar randomização de inimigos
+- Organizar o codigo
+    - Dividir o codigo em módulos
 - Menu principal
     - Melhorar o Menu
-- Adicionar escolha de heroi
-    - Adicionar opção de escolha no menu
-    - Varias moedas, poções e força de cada heroi
-- Adicionar mais inimigos
-- Organizar o codigo
+- Variar moedas, poções e força de cada heroi
 - Melhorar a logica das moedas
 - Melhorar a logica de reset
-- Espaço invisivel das sprites do esqueleto muito grande(hitbox grande)
 - Resetar o turno quando mudar de mapa
-- Manter as poções compradas ao resetar
 - Identificar o turno
+- Adicionar Taverna/Guilda(na porta ao lado do mercador)
 
 # Feito
 - Adicionar npcs
@@ -31,10 +29,15 @@ Código base: [video](https://www.youtube.com/watch?v=Vlolidaoiak&list=PLjcN1Eyu
         - Comprar poções
     - Cachorro
     - Mendingo
- - Codigo base
- - Adicionar moedas
- - Opção de ir para a cidade
- - Arrumar o cursor
- - Mapa funcionando
- - Adicionar menu
- - Adicionar escolha de heroi
+- Codigo base
+- Adicionar moedas
+- Opção de ir para a cidade
+- Arrumar o cursor
+- Mapa funcionando
+- Adicionar menu
+- Adicionar escolha de heroi
+    - Adicionar opção de escolha no menu    
+- Organizar ordem dos sprites
+- Adicionar uma hitbox
+- Manter as poções compradas ao resetar
+- Adicionar mais inimigos
