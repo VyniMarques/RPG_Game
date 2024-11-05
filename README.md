@@ -6,20 +6,22 @@ Código base: [video](https://www.youtube.com/watch?v=Vlolidaoiak&list=PLjcN1Eyu
 
 ![screenshot](midia/Screenshots/forest.png)
 
-
 # Planos
-- Colocar a barra de vida junto da instancia de inimigo
-- Adicionar randomização de inimigos
-- Organizar o codigo
+- [🔴] Arrumar animação de morte
+- [🟡] Colocar a barra de vida junto da instancia de inimigo
+- [🟡] Adicionar randomização de inimigos
+- [🔴] Organizar o codigo
     - Dividir o codigo em módulos
-- Menu principal
+- [🟢] Menu principal
     - Melhorar o Menu
-- Variar moedas, poções e força de cada heroi
-- Melhorar a logica das moedas
-- Melhorar a logica de reset
-- Resetar o turno quando mudar de mapa
-- Identificar o turno
-- Adicionar Taverna/Guilda(na porta ao lado do mercador)
+- [🟢] Variar moedas, poções e força de cada heroi
+- [🟢] Melhorar a logica das moedas
+- [🟡] Melhorar a logica de reset
+- [🟡] Identificar o turno
+- [🟢] Adicionar Taverna/Guilda(na porta ao lado do mercador)
+- [🟢] Adicionar nivel
+- [🟢] Adicionar opção de aumentar vida
+- [🟢] Randomizar status dos inimigos baseado no heroi
 
 # Feito
 - Adicionar npcs
@@ -41,3 +43,5 @@ Código base: [video](https://www.youtube.com/watch?v=Vlolidaoiak&list=PLjcN1Eyu
 - Adicionar uma hitbox
 - Manter as poções compradas ao resetar
 - Adicionar mais inimigos
+- Tirar mapa da batalha
+    - Colocar opção de fugir(ir para a cidade e resetar a batalha)
