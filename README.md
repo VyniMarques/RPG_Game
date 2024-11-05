@@ -4,20 +4,21 @@ Repositório para criar um jogo de RPG de batalhas de turno.
 
 Código base: [video](https://www.youtube.com/watch?v=Vlolidaoiak&list=PLjcN1EyupaQnvpv61iriF8Ax9dKra-MhZ) por Coding With Russ
 
-![screenshot](midia/Screenshots/forest.png)
+![screenshot](assets/Screenshots/forest.png)
 
 # Planos
-- [🔴] Arrumar animação de morte
-- [🟡] Colocar a barra de vida junto da instancia de inimigo
-- [🟡] Adicionar randomização de inimigos
+- [🔴] Melhorar Loops
 - [🔴] Organizar o codigo
     - Dividir o codigo em módulos
+- [🔴] 
+- [🟡] Colocar a barra de vida junto da instancia de inimigo
+- [🟡] Adicionar randomização de inimigos
+- [🟡] Melhorar a logica de reset
+- [🟡] Identificar o turno
 - [🟢] Menu principal
     - Melhorar o Menu
 - [🟢] Variar moedas, poções e força de cada heroi
 - [🟢] Melhorar a logica das moedas
-- [🟡] Melhorar a logica de reset
-- [🟡] Identificar o turno
 - [🟢] Adicionar Taverna/Guilda(na porta ao lado do mercador)
 - [🟢] Adicionar nivel
 - [🟢] Adicionar opção de aumentar vida
@@ -45,3 +46,4 @@ Código base: [video](https://www.youtube.com/watch?v=Vlolidaoiak&list=PLjcN1Eyu
 - Adicionar mais inimigos
 - Tirar mapa da batalha
     - Colocar opção de fugir(ir para a cidade e resetar a batalha)
+- Arrumar animação de morte
