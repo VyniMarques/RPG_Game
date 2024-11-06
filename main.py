@@ -2,8 +2,16 @@ from pygame.locals import *
 import pygame
 
 from utils.button import Button
-from utils.combat import reset_battle
-from utils.draw import draw_bg, draw_panel, draw_text, DamageText
+from utils.combat import reset_battle, buy_upgrade, DamageText
+from utils.draw import (
+    draw_bg,
+    draw_panel,
+    draw_text,
+    draw_update,
+    draw_hero_hud,
+    draw_npcs,
+    handle_cursor,
+)
 from utils.loop import handle_events
 from utils.loop import basic
 from utils.selectEnemies import selectEnemies
@@ -189,7 +197,7 @@ enemy_options2 = [
 
 
 def menu():
-    global hero, hero_in_city, hero_health_bar
+    global hero, hero_in_city
     pygame.mouse.set_visible(True)
     chosen = False
 
@@ -203,32 +211,23 @@ def menu():
 
         draw_text("RPG Game", font, black, 350, 20)
 
-        if knight_button.draw():
-            hero_op = 0
-            chosen = True
+        buttons = [
+            knight_button,
+            archer_button,
+            assasin_button,
+            monk_button,
+            priestess_button,
+            mauler_button,
+        ]
 
-        if archer_button.draw():
-            hero_op = 1
-            chosen = True
-
-        if assasin_button.draw():
-            hero_op = 2
-            chosen = True
-
-        if monk_button.draw():
-            hero_op = 3
-            chosen = True
-
-        if priestess_button.draw():
-            hero_op = 4
-            chosen = True
-
-        if mauler_button.draw():
-            hero_op = 5
-            chosen = True
+        for i, button in enumerate(buttons):
+            if button.draw():
+                hero_op = i
+                chosen = True
+                break
 
         if chosen:
-            hero, hero_in_city, hero_health_bar = selectHero(hero_op)
+            hero, hero_in_city = selectHero(hero_op)
             pygame.time.delay(200)
             city()
 
@@ -244,21 +243,21 @@ def map():
 
         basic("map", hero)
 
-        if forest_button.draw():
-            forest()
+        actions = {
+            forest_button: forest,
+            city_button: city,
+            cave_button: cave,
+        }
 
-        if city_button.draw():
-            city()
-
-        if cave_button.draw():
-            cave()
+        for button, action in actions.items():
+            if button.draw():
+                action()
+                break
 
         if potion_button.draw():
             potion = True
 
-        draw_text(str(hero.potions), font, red, 150, screen_height - bottom_pannel + 70)
-
-        hero_health_bar.draw(hero.hp)
+        draw_hero_hud(hero)
 
         clicked = handle_events()
 
@@ -269,54 +268,37 @@ def city():
     pygame.mouse.set_visible(True)
     cursor_hidden = False
     clicked = False
-    while True:
 
+    npcs = [hero_in_city, blacksmith, merchant, beggar, dog]
+
+    while True:
         basic("city", hero)
 
-        if map_button.draw():
-            map()
+        actions = {
+            map_button: map,
+        }
+
+        for button, action in actions.items():
+            if button.draw():
+                action()
+                break
 
         if potion_button.draw():
             potion = True
 
-        draw_text(str(hero.potions), font, red, 150, screen_height - bottom_pannel + 70)
-
-        hero_health_bar.draw(hero.hp)
-        hero_in_city.update()
-        hero_in_city.draw()
-        blacksmith.update()
-        blacksmith.draw()
-        merchant.update()
-        merchant.draw()
-        beggar.update()
-        beggar.draw()
-        dog.update()
-        dog.draw()
+        draw_hero_hud(hero)
+        draw_npcs(npcs)
 
         pos = pygame.mouse.get_pos()
 
         if merchant.rect.collidepoint(pos):
-            if not cursor_hidden:
-                pygame.mouse.set_visible(False)
-                cursor_hidden = True
-            screen.blit(potion_plus_img, pos)
-            if clicked:
-                store()
-
+            handle_cursor(merchant, potion_plus_img, cursor_hidden, clicked, store)
         elif blacksmith.rect.collidepoint(pos):
-            if not cursor_hidden:
-                pygame.mouse.set_visible(False)
-                cursor_hidden = True
-            screen.blit(forge_img, pos)
-            if clicked:
-                forge()
+            handle_cursor(blacksmith, forge_img, cursor_hidden, clicked, forge)
         else:
-            if cursor_hidden:
-                pygame.mouse.set_visible(True)
-                cursor_hidden = False
-
+            pygame.mouse.set_visible(True)
+            cursor_hidden = False
         clicked = handle_events()
-
         pygame.display.update()
 
 
@@ -345,9 +327,7 @@ def cave():
         if potion_button.draw():
             potion = True
 
-        draw_text(str(hero.potions), font, red, 150, screen_height - bottom_pannel + 70)
-
-        hero_health_bar.draw(hero.hp)
+        draw_hero_hud(hero)
 
         for i, enemy in enumerate(enemies):
             enemy.update()
@@ -395,7 +375,7 @@ def cave():
 
                         # Attack
                         if attack == True and target != None:
-                            hero.attack(target)
+                            hero.attack(target, damage_text_group)
                             current_fighter += 1
                             action_cooldown = 0
                             hero_turn = 0
@@ -451,7 +431,7 @@ def cave():
                                 enemy_turn = 0
                             else:
                                 # Attack
-                                enemy.attack(hero)
+                                enemy.attack(hero, damage_text_group)
                                 current_fighter += 1
                                 action_cooldown = 0
                                 enemy_turn = 0
@@ -512,9 +492,7 @@ def forest():
         if potion_button.draw():
             potion = True
 
-        draw_text(str(hero.potions), font, red, 150, screen_height - bottom_pannel + 70)
-
-        hero_health_bar.draw(hero.hp)
+        draw_hero_hud(hero)
 
         for i, enemy in enumerate(enemies):
             enemy.update()
@@ -564,7 +542,7 @@ def forest():
                         # Attack
                         if attack == True and target != None:
 
-                            hero.attack(target)
+                            hero.attack(target, damage_text_group)
                             current_fighter += 1
                             action_cooldown = 0
                             hero_turn = 0
@@ -622,7 +600,7 @@ def forest():
                                 enemy_turn = 0
                             else:
                                 # Attack
-                                enemy.attack(hero)
+                                enemy.attack(hero, damage_text_group)
                                 current_fighter += 1
                                 action_cooldown = 0
                                 enemy_turn = 0
@@ -670,16 +648,16 @@ def store():
             potion = True
 
         if potion_plus_button.draw():
-            if hero.gold >= 5:
-                hero.gold -= 5
-                hero.potions += 1
-                print("Potions:", hero.potions)
+            buy_upgrade(
+                cost=5,
+                stat_increase=lambda: setattr(hero, "potions", hero.potions + 1),
+                stat_name="potions",
+                hero=hero,
+            )
 
-        draw_text(str(hero.potions), font, red, 150, screen_height - bottom_pannel + 70)
+        draw_hero_hud(hero)
 
-        merchant_city.update()
-        merchant_city.draw()
-        hero_health_bar.draw(hero.hp)
+        draw_update(merchant_city)
 
         clicked = handle_events()
 
@@ -700,17 +678,16 @@ def forge():
             potion = True
 
         if strength_plus_button.draw():
-            if hero.gold >= 10:
-                hero.gold -= 10
-                hero.strength += 1
-                print("Strength:", hero.strength)
+            buy_upgrade(
+                cost=10,
+                stat_increase=lambda: setattr(hero, "strength", hero.strength + 1),
+                stat_name="strength",
+                hero=hero,
+            )
 
-        draw_text(str(hero.potions), font, red, 150, screen_height - bottom_pannel + 70)
+        draw_hero_hud(hero)
 
-        blacksmith_city.update()
-        blacksmith_city.draw()
-
-        hero_health_bar.draw(hero.hp)
+        draw_update(blacksmith_city)
 
         clicked = handle_events()
 
