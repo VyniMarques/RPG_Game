@@ -1,6 +1,8 @@
 import pygame
 import random
 
+from utils.healthBar import HealthBar
+from utils.combat import DamageText
 
 pygame.init()
 
@@ -14,24 +16,7 @@ screen = pygame.display.set_mode((screen_width, screen_height))
 red = (255, 0, 0)
 font = pygame.font.SysFont("Times New Roman", 26)
 
-damage_text_group = pygame.sprite.Group()
 
-class _DamageText(pygame.sprite.Sprite):
-
-    def __init__(self, x, y, damage, color):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = font.render(damage, True, color)
-        self.rect = self.image.get_rect()
-        self.rect.center = (x, y)
-        self.counter = 0
-
-    def update(self):
-        # Move damage text up
-        self.rect.y -= 1
-        # Delete the text after a few seconds
-        self.counter += 1
-        if self.counter > 30:
-            self.kill()
 class Fighter:
     def __init__(
         self,
@@ -65,6 +50,11 @@ class Fighter:
         self.image = pygame.Surface((50, 50))
         self.rect = self.image.get_rect(center=(x, y))
         self.hitbox = pygame.Rect(self.rect.x - 40, self.rect.y - 40, 120, 140)
+
+        # ======== Health bar ========
+        self.health_bar = HealthBar(
+            100, screen_height - bottom_pannel + 40, self.hp, self.max_hp
+        )
 
         # Load idle images
         temp_list = []
@@ -134,7 +124,7 @@ class Fighter:
         )
 
     # Set variables to Attack animation and deal damage
-    def attack(self, target):
+    def attack(self, target, damage_text_group):
 
         # Deal damage to enemy
         rand = random.randint(-5, 5)
@@ -151,7 +141,7 @@ class Fighter:
             target.death()
             target.dropGold(self)
 
-        damage_text = _DamageText(target.rect.centerx, target.rect.y, str(damage), red)
+        damage_text = DamageText(target.rect.centerx, target.rect.y, str(damage), red)
         damage_text_group.add(damage_text)
 
         # Set variables to Attack animation
