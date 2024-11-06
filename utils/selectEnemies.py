@@ -18,7 +18,6 @@ health_bar_positions = [
 ]
 
 
-
 # Select Random Enemies
 def selectEnemies(enemy_options):
     selected_enemies = random.sample(enemy_options, 2)

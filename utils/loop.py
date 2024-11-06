@@ -23,6 +23,7 @@ blue = (0, 0, 255)
 white = (255, 255, 255)
 black = (0, 0, 0)
 
+
 def handle_events():
     for event in pygame.event.get():
         if event.type == QUIT:
@@ -31,6 +32,7 @@ def handle_events():
         elif event.type == pygame.MOUSEBUTTONDOWN:
             return True
     return False
+
 
 def basic(place, hero, enemies=None):
     screen.fill(black)

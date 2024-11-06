@@ -1,6 +1,7 @@
 import pygame
 
 pygame.init()
+
 # ======== Game Window ========
 bottom_pannel = 150
 screen_width = 800
@@ -11,16 +12,14 @@ screen = pygame.display.set_mode((screen_width, screen_height))
 # ======== Text Variables ========
 font = pygame.font.SysFont("Times New Roman", 26)
 red = (255, 0, 0)
-green = (0, 255, 0)
-blue = (0, 0, 255)
 white = (255, 255, 255)
-black = (0, 0, 0)
 
+# ======== Icons ========
 # Panel
 panel_img = pygame.image.load("assets/Icons/panel.png").convert_alpha()
-
 # Gold
 gold_img = pygame.image.load("assets/Icons/gold.png").convert_alpha()
+
 
 # Draw Background
 def draw_bg(place):
@@ -61,6 +60,12 @@ def draw_gold(hero):
     gold_text.draw()
 
 
+# Draw and update NPCs
+def draw_update(npc):
+    npc.update()
+    npc.draw()
+
+
 # Gold Text
 class GoldText(pygame.sprite.Sprite):
 
@@ -73,20 +78,23 @@ class GoldText(pygame.sprite.Sprite):
     def draw(self):
         screen.blit(self.image, self.rect)
 
-# Damage text
-class DamageText(pygame.sprite.Sprite):
 
-    def __init__(self, x, y, damage, color):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = font.render(damage, True, color)
-        self.rect = self.image.get_rect()
-        self.rect.center = (x, y)
-        self.counter = 0
+def draw_hero_hud(hero):
+    draw_text(str(hero.potions), font, red, 150, screen_height - bottom_pannel + 70)
+    hero.health_bar.draw(hero.hp)
 
-    def update(self):
-        # Move damage text up
-        self.rect.y -= 1
-        # Delete the text after a few seconds
-        self.counter += 1
-        if self.counter > 30:
-            self.kill()
+
+def draw_npcs(list):
+    # Draw and update all NPCs in the city.
+    for npc in list:
+        npc.update()
+        npc.draw()
+
+
+def handle_cursor(npc, image, cursor_hidden, clicked, action=None):
+    if not cursor_hidden:
+        pygame.mouse.set_visible(False)
+        cursor_hidden = True
+    screen.blit(image, pygame.mouse.get_pos())
+    if clicked and action:
+        action()

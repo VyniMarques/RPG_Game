@@ -4,6 +4,7 @@ from utils.healthBar import HealthBar
 from characters.fighter import Fighter
 
 pygame.init()
+
 # ======== Game Window ========
 bottom_pannel = 150
 screen_width = 800
@@ -11,9 +12,10 @@ screen_height = 400 + bottom_pannel
 
 screen = pygame.display.set_mode((screen_width, screen_height))
 
+
 # Select Hero
 def selectHero(hero_op):
-    global hero, hero_in_city, hero_health_bar
+    global hero, hero_in_city
 
     print("Selecting Hero")
 
@@ -42,9 +44,4 @@ def selectHero(hero_op):
 
     print("Heroi selected: " + hero.name)
 
-    # ======== Health bar ========
-    hero_health_bar = HealthBar(
-        100, screen_height - bottom_pannel + 40, hero.hp, hero.max_hp
-    )
-
-    return hero, hero_in_city, hero_health_bar
+    return hero, hero_in_city

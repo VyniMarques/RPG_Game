@@ -11,14 +11,10 @@ screen_width = 800
 screen_height = 400 + bottom_pannel
 
 screen = pygame.display.set_mode((screen_width, screen_height))
-programIcon = pygame.image.load("assets/Icons/espadas.png").convert_alpha()
+
 # ======== Text Variables ========
-font = pygame.font.SysFont("Times New Roman", 26)
 red = (255, 0, 0)
 green = (0, 255, 0)
-blue = (0, 0, 255)
-white = (255, 255, 255)
-black = (0, 0, 0)
 
 
 # Health Bar (for player and enemy)
