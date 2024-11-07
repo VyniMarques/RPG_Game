@@ -2,7 +2,8 @@ from pygame.locals import *
 import pygame
 
 from utils.button import Button
-from utils.combat import reset_battle, buy_upgrade, DamageText
+from utils.combat import reset_battle, hide_mouse, DamageText
+from utils.non_combat import buy_upgrade, message, text_update
 from utils.draw import (
     draw_bg,
     draw_panel,
@@ -98,6 +99,9 @@ run_img = pygame.image.load("assets/Icons/run.png").convert_alpha()
 # Strength
 strength_img = pygame.image.load("assets/Icons/strength_plus.png").convert_alpha()
 
+# Defense
+defense_img = pygame.image.load("assets/Icons/defense_plus.png").convert_alpha()
+
 # Restart
 restart_img = pygame.image.load("assets/Icons/restart.png").convert_alpha()
 
@@ -131,6 +135,11 @@ potion_plus_button = Button(
 strength_plus_button = Button(
     screen, 600, screen_height - bottom_pannel + 70, strength_img, 64, 64
 )
+
+defense_plus_button = Button(
+    screen, 500, screen_height - bottom_pannel + 70, defense_img, 64, 64
+)
+
 restart_button = Button(screen, 330, 120, restart_img, 120, 30)
 
 city_button = Button(screen, 30, 100, city_img, 64, 64)
@@ -161,6 +170,7 @@ mauler_button = Button(screen, 550, 200, mauler_img, 165, 165)
 # ======== Object Instances ========
 
 damage_text_group = pygame.sprite.Group()
+misc_text_group = pygame.sprite.Group()
 
 # ====== NPCs ======
 
@@ -179,7 +189,7 @@ beggar = Npc(145, 315, "Beggar", 5, 2.6)
 
 # Forest
 enemy_options1 = [
-    Fighter(0, 0, "Bandit", 10, 6, 0, 20, 3, 8, 3, 10, 8),
+    Fighter(0, 0, "Bandit", 10, 6, 1, 20, 3, 8, 3, 10, 8),
     Fighter(0, 0, "Bandit", 10, 6, 0, 20, 3, 8, 3, 10, 8),
 ]
 
@@ -298,31 +308,36 @@ def city():
         else:
             pygame.mouse.set_visible(True)
             cursor_hidden = False
+
         clicked = handle_events()
+
         pygame.display.update()
 
 
-def cave():
+def forest():
     global game_over, current_fighter, action_cooldown
     pygame.mouse.set_visible(True)
 
-    enemies, health_bars = selectEnemies(enemy_options2)
+    enemies, health_bars = selectEnemies(enemy_options1)
+
     hero_turn = 0
     enemy_turn = 0
-
     game_over = 0
+
     while True:
 
-        basic("cave", hero)
+        basic("forest", hero)
         draw_panel(hero, enemies)
+
         # Reset actions variables
         attack = False
         potion = False
         target = None
 
-        if run_button.draw() and game_over == 0:
-            reset_battle(hero, enemies)
-            city()
+        if game_over == 0:
+            if run_button.draw() and current_fighter == 1:
+                reset_battle(hero, enemies)
+                city()
 
         if potion_button.draw():
             potion = True
@@ -330,26 +345,18 @@ def cave():
         draw_hero_hud(hero)
 
         for i, enemy in enumerate(enemies):
-            enemy.update()
-            enemy.draw()
+            draw_update(enemy)
             health_bars[i].draw(enemy.hp)
 
-        hero.update()
-        hero.draw()
+        draw_update(hero)
 
         # Draw damage text
-        damage_text_group.update()
-        damage_text_group.draw(screen)
+        text_update(damage_text_group, screen)
 
         pos = pygame.mouse.get_pos()
+
         # Change mouse icon
-        if enemies[0].hitbox.collidepoint(pos) or enemies[1].hitbox.collidepoint(pos):
-            # Hide mouse
-            pygame.mouse.set_visible(False)
-            # Show sword as mouse cursor
-            screen.blit(sword_img, pos)
-        else:
-            pygame.mouse.set_visible(True)
+        hide_mouse(pos, enemies)
 
         # Target enemy
         for count, enemy in enumerate(enemies):
@@ -360,7 +367,6 @@ def cave():
 
         if hero_turn == 1:
             print("Hero Turn")
-
         if enemy_turn == 1:
             print("Enemy Turn")
 
@@ -375,6 +381,7 @@ def cave():
 
                         # Attack
                         if attack == True and target != None:
+
                             hero.attack(target, damage_text_group)
                             current_fighter += 1
                             action_cooldown = 0
@@ -382,6 +389,7 @@ def cave():
 
                         # Potion
                         if potion == True:
+
                             if hero.potions > 0:
                                 # Check heal beyond max helth
                                 if hero.max_hp - hero.hp > potion_effect:
@@ -389,14 +397,14 @@ def cave():
                                 else:
                                     heal_amount = hero.max_hp - hero.hp
                                 hero.hp += heal_amount
+                                hero.potions -= 1
                                 damage_text = DamageText(
-                                    hero.rect.centerx,
-                                    hero.rect.y,
+                                    hero.hitbox.centerx,
+                                    hero.hitbox.y,
                                     str(heal_amount),
                                     green,
                                 )
                                 damage_text_group.add(damage_text)
-                                hero.potions -= 1
                                 current_fighter += 1
                                 action_cooldown = 0
                                 hero_turn = 0
@@ -419,8 +427,8 @@ def cave():
                                     heal_amount = enemy.max_hp - enemy.hp
                                 enemy.hp += heal_amount
                                 damage_text = DamageText(
-                                    enemy.rect.centerx,
-                                    enemy.rect.y,
+                                    enemy.hitbox.centerx,
+                                    enemy.hitbox.y,
                                     str(heal_amount),
                                     green,
                                 )
@@ -465,19 +473,18 @@ def cave():
         pygame.display.update()
 
 
-def forest():
+def cave():
     global game_over, current_fighter, action_cooldown
     pygame.mouse.set_visible(True)
 
-    enemies, health_bars = selectEnemies(enemy_options1)
+    enemies, health_bars = selectEnemies(enemy_options2)
     hero_turn = 0
     enemy_turn = 0
-
     game_over = 0
 
     while True:
 
-        basic("forest", hero)
+        basic("cave", hero)
         draw_panel(hero, enemies)
 
         # Reset actions variables
@@ -485,9 +492,10 @@ def forest():
         potion = False
         target = None
 
-        if run_button.draw() and game_over == 0:
-            reset_battle(hero, enemies)
-            city()
+        if game_over == 0:
+            if run_button.draw() and current_fighter == 1:
+                reset_battle(hero, enemies)
+                city()
 
         if potion_button.draw():
             potion = True
@@ -495,27 +503,18 @@ def forest():
         draw_hero_hud(hero)
 
         for i, enemy in enumerate(enemies):
-            enemy.update()
-            enemy.draw()
+            draw_update(enemy)
             health_bars[i].draw(enemy.hp)
 
-        # Draw fighters
-        hero.update()
-        hero.draw()
+        draw_update(hero)
 
         # Draw damage text
-        damage_text_group.update()
-        damage_text_group.draw(screen)
+        text_update(damage_text_group, screen)
 
         pos = pygame.mouse.get_pos()
+
         # Change mouse icon
-        if enemies[0].hitbox.collidepoint(pos) or enemies[1].hitbox.collidepoint(pos):
-            # Hide mouse
-            pygame.mouse.set_visible(False)
-            # Show sword as mouse cursor
-            screen.blit(sword_img, pos)
-        else:
-            pygame.mouse.set_visible(True)
+        hide_mouse(pos, enemies)
 
         # Target enemy
         for count, enemy in enumerate(enemies):
@@ -534,14 +533,12 @@ def forest():
             if hero.alive == True:
                 if current_fighter == 1:
                     action_cooldown += 1
-
                     if action_cooldown >= action_wait_time:
                         hero_turn += 1
                         # Look for player action
 
                         # Attack
                         if attack == True and target != None:
-
                             hero.attack(target, damage_text_group)
                             current_fighter += 1
                             action_cooldown = 0
@@ -549,7 +546,6 @@ def forest():
 
                         # Potion
                         if potion == True:
-
                             if hero.potions > 0:
                                 # Check heal beyond max helth
                                 if hero.max_hp - hero.hp > potion_effect:
@@ -557,14 +553,14 @@ def forest():
                                 else:
                                     heal_amount = hero.max_hp - hero.hp
                                 hero.hp += heal_amount
-                                hero.potions -= 1
                                 damage_text = DamageText(
-                                    hero.rect.centerx,
-                                    hero.rect.y,
+                                    hero.hitbox.centerx,
+                                    hero.hitbox.y,
                                     str(heal_amount),
                                     green,
                                 )
                                 damage_text_group.add(damage_text)
+                                hero.potions -= 1
                                 current_fighter += 1
                                 action_cooldown = 0
                                 hero_turn = 0
@@ -578,7 +574,6 @@ def forest():
                         action_cooldown += 1
                         enemy_turn += 1
                         if action_cooldown >= action_wait_time:
-
                             # Cheack if enemy need to heal
                             if (enemy.hp / enemy.max_hp) < 0.5 and enemy.potions > 0:
                                 # Check heal beyond max helth
@@ -588,8 +583,8 @@ def forest():
                                     heal_amount = enemy.max_hp - enemy.hp
                                 enemy.hp += heal_amount
                                 damage_text = DamageText(
-                                    enemy.rect.centerx,
-                                    enemy.rect.y,
+                                    enemy.hitbox.centerx,
+                                    enemy.hitbox.y,
                                     str(heal_amount),
                                     green,
                                 )
@@ -637,6 +632,8 @@ def forest():
 def store():
     pygame.mouse.set_visible(True)
 
+    message(merchant_city, "Potions only 5 gold", white, misc_text_group)
+
     while True:
 
         basic("store", hero)
@@ -645,6 +642,7 @@ def store():
             city()
 
         if potion_button.draw():
+
             potion = True
 
         if potion_plus_button.draw():
@@ -653,7 +651,12 @@ def store():
                 stat_increase=lambda: setattr(hero, "potions", hero.potions + 1),
                 stat_name="potions",
                 hero=hero,
+                max=9,
+                npc=merchant_city,
+                group=misc_text_group,
             )
+
+        text_update(misc_text_group, screen)
 
         draw_hero_hud(hero)
 
@@ -683,7 +686,23 @@ def forge():
                 stat_increase=lambda: setattr(hero, "strength", hero.strength + 1),
                 stat_name="strength",
                 hero=hero,
+                max=15,
+                npc=blacksmith_city,
+                group=misc_text_group,
             )
+
+        if defense_plus_button.draw():
+            buy_upgrade(
+                cost=15,
+                stat_increase=lambda: setattr(hero, "max_hp", hero.max_hp + 5),
+                stat_name="max_hp",
+                hero=hero,
+                max=50,
+                npc=blacksmith_city,
+                group=misc_text_group,
+            )
+
+        text_update(misc_text_group, screen)
 
         draw_hero_hud(hero)
 
