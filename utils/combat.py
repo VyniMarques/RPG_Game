@@ -2,8 +2,17 @@ import pygame
 
 pygame.init()
 
+bottom_pannel = 150
+screen_width = 800
+screen_height = 400 + bottom_pannel
+
+screen = pygame.display.set_mode((screen_width, screen_height))
+
 # ======== Text Variables ========
 font = pygame.font.SysFont("Times New Roman", 26)
+
+# Sword
+sword_img = pygame.image.load("assets/Icons/sword.png").convert_alpha()
 
 
 # Reset battle to initial state
@@ -16,15 +25,7 @@ def reset_battle(hero, enemies):
     current_fighter = 1
     action_cooldown = 0
     game_over = 0
-    print("Game_over", game_over)
-
-
-# Buy upgrade/potions
-def buy_upgrade(cost, stat_increase, stat_name, hero):
-    if hero.gold >= cost:
-        hero.gold -= cost
-        stat_increase()
-        print(f"{stat_name}:", getattr(hero, stat_name))
+    print("Game Over", game_over)
 
 
 # Class DamageText for damage an heal
@@ -41,3 +42,16 @@ class DamageText(pygame.sprite.Sprite):
         self.counter += 1
         if self.counter > 30:
             self.kill()
+
+
+def hide_mouse(pos, enemies):
+    if (
+        enemies[0].hitbox.collidepoint(pos)
+        and enemies[0].alive == True
+        or enemies[1].hitbox.collidepoint(pos)
+        and enemies[1].alive == True
+    ):
+        pygame.mouse.set_visible(False)
+        screen.blit(sword_img, pos)
+    else:
+        pygame.mouse.set_visible(True)
