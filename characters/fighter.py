@@ -49,7 +49,11 @@ class Fighter:
 
         self.image = pygame.Surface((50, 50))
         self.rect = self.image.get_rect(center=(x, y))
-        self.hitbox = pygame.Rect(self.rect.x - 40, self.rect.y - 40, 120, 140)
+
+        if self.name == "Knight":
+            self.hitbox = pygame.Rect(self.rect.x - 40, self.rect.y - 40, 120, 140)
+        else:
+            self.hitbox = pygame.Rect(self.rect.x - 35, self.rect.y + 60, 120, 140)
 
         # ======== Health bar ========
         self.health_bar = HealthBar(
@@ -141,7 +145,9 @@ class Fighter:
             target.death()
             target.dropGold(self)
 
-        damage_text = DamageText(target.rect.centerx, target.rect.y, str(damage), red)
+        damage_text = DamageText(
+            target.hitbox.centerx, target.hitbox.y, str(damage), red
+        )
         damage_text_group.add(damage_text)
 
         # Set variables to Attack animation
