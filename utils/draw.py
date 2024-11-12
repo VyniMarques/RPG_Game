@@ -1,24 +1,8 @@
 import pygame
 
+from utils.variables import *
+
 pygame.init()
-
-# ======== Game Window ========
-bottom_pannel = 150
-screen_width = 800
-screen_height = 400 + bottom_pannel
-
-screen = pygame.display.set_mode((screen_width, screen_height))
-
-# ======== Text Variables ========
-font = pygame.font.SysFont("Times New Roman", 26)
-red = (255, 0, 0)
-white = (255, 255, 255)
-
-# ======== Icons ========
-# Panel
-panel_img = pygame.image.load("assets/Icons/panel.png").convert_alpha()
-# Gold
-gold_img = pygame.image.load("assets/Icons/gold.png").convert_alpha()
 
 
 # Draw Background
@@ -60,12 +44,6 @@ def draw_gold(hero):
     gold_text.draw()
 
 
-# Draw and update NPCs
-def draw_update(npc):
-    npc.update()
-    npc.draw()
-
-
 # Gold Text
 class GoldText(pygame.sprite.Sprite):
 
@@ -79,16 +57,21 @@ class GoldText(pygame.sprite.Sprite):
         screen.blit(self.image, self.rect)
 
 
+# Draw Hero name and health bar
 def draw_hero_hud(hero):
     draw_text(str(hero.potions), font, red, 150, screen_height - bottom_pannel + 70)
     hero.health_bar.draw(hero.hp)
 
 
-def draw_npcs(list):
-    # Draw and update all NPCs in the city.
-    for npc in list:
-        npc.update()
-        npc.draw()
+# Draw and update a list of NPCs
+def draw_update(npcs):
+    if isinstance(npcs, list):
+        for npc in npcs:
+            npc.update()
+            npc.draw()
+    else:
+        npcs.update()
+        npcs.draw()
 
 
 def handle_cursor(npc, image, cursor_hidden, clicked, action=None):

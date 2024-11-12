@@ -1,21 +1,11 @@
 import pygame
+
 import random
 
 from utils.healthBar import HealthBar
+from utils.variables import *
 
 pygame.init()
-# ======== Game Window ========
-bottom_pannel = 150
-screen_width = 800
-screen_height = 400 + bottom_pannel
-
-screen = pygame.display.set_mode((screen_width, screen_height))
-
-positions = [(530, 270), (700, 270)]
-health_bar_positions = [
-    (550, screen_height - bottom_pannel + 40),
-    (550, screen_height - bottom_pannel + 100),
-]
 
 
 # Select Random Enemies

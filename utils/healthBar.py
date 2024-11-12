@@ -1,20 +1,9 @@
 from pygame.locals import *
-
 import pygame
 
+from utils.variables import *
+
 pygame.init()
-
-
-# ======== Game Window ========
-bottom_pannel = 150
-screen_width = 800
-screen_height = 400 + bottom_pannel
-
-screen = pygame.display.set_mode((screen_width, screen_height))
-
-# ======== Text Variables ========
-red = (255, 0, 0)
-green = (0, 255, 0)
 
 
 # Health Bar (for player and enemy)

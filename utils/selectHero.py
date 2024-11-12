@@ -1,19 +1,12 @@
 import pygame
 
-from utils.healthBar import HealthBar
+from utils.variables import *
+
 from characters.fighter import Fighter
 
 pygame.init()
 
-# ======== Game Window ========
-bottom_pannel = 150
-screen_width = 800
-screen_height = 400 + bottom_pannel
 
-screen = pygame.display.set_mode((screen_width, screen_height))
-
-
-# Select Hero
 def selectHero(hero_op):
     global hero, hero_in_city
 

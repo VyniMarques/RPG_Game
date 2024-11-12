@@ -1,17 +1,8 @@
 import pygame
 
+from utils.variables import *
+
 pygame.init()
-
-# ======== Game Window ========
-bottom_pannel = 150
-screen_width = 800
-screen_height = 400 + bottom_pannel
-
-screen = pygame.display.set_mode((screen_width, screen_height))
-
-# ======== Text Variables ========
-font = pygame.font.SysFont("Times New Roman", 26)
-red = (255, 0, 0)
 
 
 # Buy upgrade/potions

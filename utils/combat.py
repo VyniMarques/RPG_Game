@@ -1,19 +1,8 @@
+from pygame.locals import *
 import pygame
-
+from utils.variables import *
+from utils.loop import handle_events
 pygame.init()
-
-bottom_pannel = 150
-screen_width = 800
-screen_height = 400 + bottom_pannel
-
-screen = pygame.display.set_mode((screen_width, screen_height))
-
-# ======== Text Variables ========
-font = pygame.font.SysFont("Times New Roman", 26)
-
-# Sword
-sword_img = pygame.image.load("assets/Icons/sword.png").convert_alpha()
-
 
 # Reset battle to initial state
 def reset_battle(hero, enemies):
@@ -43,7 +32,7 @@ class DamageText(pygame.sprite.Sprite):
         if self.counter > 30:
             self.kill()
 
-
+# Hides the mouse icon when hovering over a living enemy
 def hide_mouse(pos, enemies):
     if (
         enemies[0].hitbox.collidepoint(pos)
