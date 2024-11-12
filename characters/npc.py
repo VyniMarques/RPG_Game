@@ -1,12 +1,6 @@
 import pygame
 
-
-# ======== Game Window ========
-bottom_pannel = 150
-screen_width = 800
-screen_height = 400 + bottom_pannel
-
-screen = pygame.display.set_mode((screen_width, screen_height))
+from utils.variables import *
 
 
 class Npc:

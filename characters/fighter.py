@@ -171,8 +171,8 @@ class Fighter:
     def death(self):
         self.action = 3
         self.frame_index = 0
-        print("Morreu")
         self.update_time = pygame.time.get_ticks()
+        print(f"{self.name} died")
 
     def reset(self):
         self.alive = True
@@ -191,5 +191,7 @@ class Fighter:
     def dropGold(self, hero):
         amount = int(self.gold / random.randint(1, 3))
         self.gold -= amount
-        print("Gold Drop", self.gold)
         hero.gold += amount
+        
+        # Gold Droped
+        print(f"Gold Dropped = {amount}\nGold Remaining = {self.gold}")
