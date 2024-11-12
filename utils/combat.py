@@ -128,7 +128,7 @@ def enemyTurn(
     count,
 ):
 
-    if current_fighter == 2 + count:
+    if current_fighter == 2 + count and hero.alive:
         if enemy.alive:
             action_cooldown += 1
             enemy_turn += 1
@@ -162,16 +162,20 @@ def enemyTurn(
                     enemy_turn = 0
         else:
             current_fighter += 1
+
     return enemy_turn, game_over, current_fighter, action_cooldown
 
 
-def gameOver(hero, enemies, place, game_over):
+def gameOver(hero, enemies, place, game_over, current_fighter):
     alive_enemies = 0
     for enemy in enemies:
         if enemy.alive == True:
             alive_enemies += 1
     if alive_enemies == 0:
         game_over = 1
+
+    if hero.alive == False:
+        game_over = -1
 
     if game_over != 0:
         if game_over == 1:
@@ -181,3 +185,6 @@ def gameOver(hero, enemies, place, game_over):
         if restart_button.draw():
             reset_battle(hero, enemies)
             place()
+        current_fighter = 1
+
+    return game_over, current_fighter
