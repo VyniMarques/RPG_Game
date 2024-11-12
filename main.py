@@ -164,11 +164,12 @@ def combat(place):
         target = None
 
         pos = pygame.mouse.get_pos()
-
+        # print(current_fighter)
         if game_over == 0:
-            if run_button.draw() and current_fighter == 1:
+            if run_button.draw() and current_fighter == 1 and game_over == 0:
                 reset_battle(hero, enemies)
                 city()
+
         if potion_button.draw():
             potion = True
 
@@ -217,7 +218,9 @@ def combat(place):
                 current_fighter = 1
 
         # Check if game is over
-        gameOver(hero, enemies, city, game_over)
+        game_over, current_fighter = gameOver(
+            hero, enemies, city, game_over, current_fighter
+        )
 
         clicked = handle_events()
 
