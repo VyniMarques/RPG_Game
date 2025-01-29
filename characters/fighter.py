@@ -47,6 +47,8 @@ class Fighter:
         self.update_time = pygame.time.get_ticks()
         self.scale_factor = scale_factor
 
+        self.counted_for_mission = False
+
         self.image = pygame.Surface((50, 50))
         self.rect = self.image.get_rect(center=(x, y))
 

@@ -2,15 +2,18 @@ import pygame
 
 from utils.variables import *
 
+
 pygame.init()
 
 
-# Draw Background
-def draw_bg(place):
-    screen.blit(
-        pygame.image.load(f"assets/Background/background_{place}.png").convert_alpha(),
-        (0, 0),
-    )
+# # Draw Background
+def draw_bg(place, size=None):
+    background = pygame.image.load(
+        f"assets/Background/background_{place}.png"
+    ).convert_alpha()
+    if size:
+        background = pygame.transform.scale(background, size)
+    screen.blit(background, (0, 0))
 
 
 # Draw text
@@ -81,3 +84,29 @@ def handle_cursor(npc, image, cursor_hidden, clicked, action=None):
     screen.blit(image, pygame.mouse.get_pos())
     if clicked and action:
         action()
+
+
+def draw_turn_indicator(name):
+    turn_text = font.render(f"{name} Turn", True, white)
+    screen.blit(turn_text, (screen_width // 2 - turn_text.get_width() // 2, 20))
+
+
+def draw_mission_panel(missions):
+    y_offset = 50  # screen_height - bottom_pannel - 35
+
+    aux = missions
+
+    mission_qtd = 3
+
+    if len(aux) > mission_qtd:
+        aux = aux[:mission_qtd]
+
+    for mission in aux:
+        status = (
+            "Completed"
+            if mission.completed
+            else f"{mission.current_count}/{mission.objective_count}"
+        )
+        draw_text("Quest:", font, yellow, 625, 10)
+        draw_text(f"{mission.name} - {status}", font, yellow, 550, y_offset)
+        y_offset += 30

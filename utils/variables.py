@@ -23,11 +23,13 @@ pygame.display.set_icon(programIcon)
 
 # ======== Text Variables ========
 font = pygame.font.SysFont("Times New Roman", 26)
+title = pygame.font.SysFont("Times New Roman", 30)
 red = (255, 0, 0)
 green = (0, 255, 0)
 blue = (0, 0, 255)
 white = (255, 255, 255)
 black = (0, 0, 0)
+yellow = (255, 255, 0)
 
 # ======== Game Variables ========
 current_fighter = 1
@@ -96,6 +98,9 @@ victory_img = pygame.image.load("assets/Icons/victory.png").convert_alpha()
 # Defeat
 defeat_img = pygame.image.load("assets/Icons/defeat.png").convert_alpha()
 
+# Quest
+quest_img = pygame.image.load("assets/Icons/quest.png").convert_alpha()
+
 # ======== Load Character Images ========
 knight_img = pygame.image.load("assets/Characters/knight.png").convert_alpha()
 
@@ -108,6 +113,8 @@ monk_img = pygame.image.load("assets/Characters/monk.png").convert_alpha()
 priestess_img = pygame.image.load("assets/Characters/priestess.png").convert_alpha()
 
 mauler_img = pygame.image.load("assets/Characters/mauler.png").convert_alpha()
+
+
 
 
 # ======== Buttons ========
@@ -139,18 +146,21 @@ return_button = Button(screen, 0, 80, return_img, 64, 64)
 
 run_button = Button(screen, 0, 90, run_img, 64, 64)
 
+quest_button = Button(screen, 0, 100, quest_img, 64, 64)
+
+
 # ======== Character selectors ========
-knight_button = Button(screen, 100, 50, knight_img, 165, 165)
+knight_button = Button(screen, 100, 100, knight_img, 165, 165)
 
-archer_button = Button(screen, 100, 200, archer_img, 165, 165)
+archer_button = Button(screen, 100, 285, archer_img, 165, 165)
 
-assasin_button = Button(screen, 330, 50, assasin_img, 165, 165)
+assasin_button = Button(screen, 330, 100, assasin_img, 165, 165)
 
-monk_button = Button(screen, 315, 215, monk_img, 170, 170)
+monk_button = Button(screen, 315, 285, monk_img, 170, 170)
 
-priestess_button = Button(screen, 550, 50, priestess_img, 165, 165)
+priestess_button = Button(screen, 550, 100, priestess_img, 165, 165)
 
-mauler_button = Button(screen, 550, 200, mauler_img, 165, 165)
+mauler_button = Button(screen, 550, 285, mauler_img, 165, 165)
 
 positions = [(530, 270), (700, 270)]
 

@@ -2,6 +2,7 @@ import pygame
 
 from characters.fighter import Fighter
 from characters.npc import Npc
+from utils.quest import Mission
 
 pygame.init()
 
@@ -42,4 +43,15 @@ enemy_options2 = [
     Fighter(0, 0, "Skeleton", 20, 5, 0, 20, 2.4, 4, 4, 4, 8),
     Fighter(0, 0, "FlyingEye", 20, 5, 0, 20, 2.4, 8, 4, 4, 8),
     Fighter(0, 0, "Mushroom", 20, 5, 0, 20, 2.4, 4, 4, 4, 8),
+]
+
+
+missions = []
+
+
+possible_missions = [
+    Mission("Hunter", "Kill 2 enemies.", 2, "kill_enemy"),
+    Mission("Monster Hunter", "Kill 5 enemies.", 5, "kill_enemy"),
+    Mission("Monster Killer", "Kill 10 enemies.", 10, "kill_enemy"),
+    Mission("Monster Assasin", "Kill 15 enemies.", 15, "kill_enemy"),
 ]

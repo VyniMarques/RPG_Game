@@ -17,3 +17,4 @@ Base Code: [video](https://www.youtube.com/watch?v=Vlolidaoiak&list=PLjcN1EyupaQ
 - Simple map
 - Options to buy potions and upgrades
 - Option to attack, use potion and run away
+- Simple quest

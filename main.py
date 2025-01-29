@@ -9,6 +9,7 @@ from utils.combat import (
     enemyTurn,
     gameOver,
 )
+
 from utils.draw import (
     draw_bg,
     draw_panel,
@@ -16,6 +17,8 @@ from utils.draw import (
     draw_update,
     draw_hero_hud,
     handle_cursor,
+    draw_turn_indicator,
+    draw_mission_panel,
 )
 from utils.non_combat import buy_upgrade, message, text_update
 from utils.selectEnemies import selectEnemies
@@ -23,6 +26,9 @@ from utils.selectHero import selectHero
 from utils.loop import handle_events, basic
 from utils.variables import *
 from utils.instances import *
+from utils.quest import checkQuest, showQuest, completeQuest
+
+import random
 
 pygame.init()
 
@@ -35,12 +41,11 @@ def menu():
     while True:
 
         screen.fill(black)
-        pygame.mouse.set_visible(True)
-        draw_bg("map")
-        screen.blit(panel_img, (0, screen_height - bottom_pannel))
+        draw_bg("map", (800, 550))
         clock.tick(fps)
 
-        draw_text("RPG Game", font, black, 350, 20)
+        draw_text("RPG Game", title, black, 350, 20)
+        draw_text("Select your hero:", font, black, 325, 65)
 
         buttons = [
             knight_button,
@@ -51,7 +56,11 @@ def menu():
             mauler_button,
         ]
 
+        mouse_pos = pygame.mouse.get_pos()
+
         for i, button in enumerate(buttons):
+            if button.rect.collidepoint(mouse_pos):
+                pygame.draw.rect(screen, (255, 0, 0), button.rect, 3)
             if button.draw():
                 hero_op = i
                 chosen = True
@@ -63,7 +72,6 @@ def menu():
             city()
 
         clicked = handle_events()
-
         pygame.display.update()
 
 
@@ -76,12 +84,14 @@ def map():
 
         actions = {
             forest_button: "forest",
-            city_button: city,
+            city_button: "city",
             cave_button: "cave",
         }
 
         for button, place in actions.items():
             if button.draw():
+                while pygame.mouse.get_pressed()[0]:  
+                    pygame.event.pump()
                 if place == "city":
                     city()
                 else:
@@ -123,7 +133,19 @@ def city():
         draw_hero_hud(hero)
         draw_update(npcs)
 
+        draw_mission_panel(missions)
+
         pos = pygame.mouse.get_pos()
+
+        # if quest_button.draw():
+        #     showQuest(possible_missions, missions)
+        #     completeQuest(possible_missions, missions)
+        if quest_button.draw():
+            completeQuest(possible_missions, missions)  # Primeiro, completa a missão
+            print(f"Missões possíveis após completar: {[m.name for m in possible_missions]}")
+            showQuest(possible_missions, missions)  # Depois, tenta pegar uma nova
+            print(f"Missões ativas após selecionar: {[m.name for m in missions]}")
+            
 
         if merchant.rect.collidepoint(pos):
             handle_cursor(merchant, potion_plus_img, cursor_hidden, clicked, store)
@@ -164,11 +186,20 @@ def combat(place):
         target = None
 
         pos = pygame.mouse.get_pos()
-        # print(current_fighter)
         if game_over == 0:
             if run_button.draw() and current_fighter == 1 and game_over == 0:
+                while pygame.mouse.get_pressed()[0]:  
+                    pygame.event.pump()
                 reset_battle(hero, enemies)
                 city()
+
+            if current_fighter == 1:
+                draw_turn_indicator("Hero")
+            else:
+                current_enemy = enemies[current_fighter - 2]
+                draw_turn_indicator(current_enemy.name)
+
+            draw_mission_panel(missions)
 
         if potion_button.draw():
             potion = True
@@ -179,6 +210,7 @@ def combat(place):
             health_bars[i].draw(enemy.hp)
 
         draw_update(hero)
+
         # Draw damage text
         text_update(damage_text_group, screen)
 
@@ -211,8 +243,9 @@ def combat(place):
                     current_fighter,
                     action_cooldown,
                     count,
+                    # missions,
                 )
-
+                checkQuest(enemy, missions)
             # If all fighters have had a turn then reset
             if current_fighter > total_fighters:
                 current_fighter = 1
@@ -221,6 +254,10 @@ def combat(place):
         game_over, current_fighter = gameOver(
             hero, enemies, city, game_over, current_fighter
         )
+
+        if game_over:
+            for enemy in enemies:
+                enemy.counted_for_mission = False  # Permite que novos combates contem para as missões
 
         clicked = handle_events()
 
