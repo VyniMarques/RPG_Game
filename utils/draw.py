@@ -63,7 +63,9 @@ class GoldText(pygame.sprite.Sprite):
 # Draw Hero name and health bar
 def draw_hero_hud(hero):
     draw_text(str(hero.potions), font, red, 150, screen_height - bottom_pannel + 70)
-    hero.health_bar.draw(hero.hp)
+    #hero.health_bar.draw(hero.hp)
+    hero.health_bar.draw(hero.hp, hero.max_hp)
+
 
 
 # Draw and update a list of NPCs

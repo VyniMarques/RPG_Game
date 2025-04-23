@@ -346,9 +346,14 @@ def forge():
             )
 
         if defense_plus_button.draw():
+
+            def increase_max_hp():
+                hero.max_hp += 5
+                hero.hp = hero.max_hp
+
             buy_upgrade(
                 cost=15,
-                stat_increase=lambda: setattr(hero, "max_hp", hero.max_hp + 5),
+                stat_increase=increase_max_hp,
                 stat_name="max_hp",
                 hero=hero,
                 max=50,
