@@ -26,11 +26,10 @@ from utils.selectHero import selectHero
 from utils.loop import handle_events, basic
 from utils.variables import *
 from utils.instances import *
-from utils.quest import checkQuest, showQuest, completeQuest
-
-import random
+from utils.quest import MissionManager
 
 pygame.init()
+mission_manager = MissionManager()
 
 
 def menu():
@@ -90,7 +89,7 @@ def map():
 
         for button, place in actions.items():
             if button.draw():
-                while pygame.mouse.get_pressed()[0]:  
+                while pygame.mouse.get_pressed()[0]:
                     pygame.event.pump()
                 if place == "city":
                     city()
@@ -113,6 +112,8 @@ def city():
     cursor_hidden = False
     clicked = False
 
+    click_released = True
+
     npcs = [hero_in_city, blacksmith, merchant, beggar, dog]
 
     while True:
@@ -133,19 +134,28 @@ def city():
         draw_hero_hud(hero)
         draw_update(npcs)
 
-        draw_mission_panel(missions)
+        draw_mission_panel(mission_manager.missions)
 
         pos = pygame.mouse.get_pos()
 
-        # if quest_button.draw():
-        #     showQuest(possible_missions, missions)
-        #     completeQuest(possible_missions, missions)
-        if quest_button.draw():
-            completeQuest(possible_missions, missions)  # Primeiro, completa a missão
-            print(f"Missões possíveis após completar: {[m.name for m in possible_missions]}")
-            showQuest(possible_missions, missions)  # Depois, tenta pegar uma nova
-            print(f"Missões ativas após selecionar: {[m.name for m in missions]}")
-            
+        mouse_buttons = pygame.mouse.get_pressed()
+
+        if not mouse_buttons[0]:  # Botão esquerdo solto
+            click_released = True
+
+        if not clicked and click_released and quest_button.draw():
+            print("Botão de missão clicado!")
+            if len(mission_manager.missions) < 3:
+                mission_manager.get_new_quest()
+            print(f"Missões ativas: {[m.name for m in mission_manager.missions]}")
+            clicked = True  # Marcamos que o clique já foi usado
+            click_released = False
+
+        if any(m.completed for m in mission_manager.missions):
+            if quest_complete_button.draw():
+                mission_manager.complete_quest()
+                clicked = True
+                click_released = False
 
         if merchant.rect.collidepoint(pos):
             handle_cursor(merchant, potion_plus_img, cursor_hidden, clicked, store)
@@ -188,7 +198,7 @@ def combat(place):
         pos = pygame.mouse.get_pos()
         if game_over == 0:
             if run_button.draw() and current_fighter == 1 and game_over == 0:
-                while pygame.mouse.get_pressed()[0]:  
+                while pygame.mouse.get_pressed()[0]:
                     pygame.event.pump()
                 reset_battle(hero, enemies)
                 city()
@@ -199,7 +209,7 @@ def combat(place):
                 current_enemy = enemies[current_fighter - 2]
                 draw_turn_indicator(current_enemy.name)
 
-            draw_mission_panel(missions)
+            draw_mission_panel(mission_manager.missions)
 
         if potion_button.draw():
             potion = True
@@ -245,7 +255,7 @@ def combat(place):
                     count,
                     # missions,
                 )
-                checkQuest(enemy, missions)
+                mission_manager.check_quests(enemy)
             # If all fighters have had a turn then reset
             if current_fighter > total_fighters:
                 current_fighter = 1
@@ -257,7 +267,9 @@ def combat(place):
 
         if game_over:
             for enemy in enemies:
-                enemy.counted_for_mission = False  # Permite que novos combates contem para as missões
+                enemy.counted_for_mission = (
+                    False  # Permite que novos combates contem para as missões
+                )
 
         clicked = handle_events()
 
@@ -269,12 +281,17 @@ def store():
 
     message(merchant_city, "Potions only 5 gold", white, misc_text_group)
 
+    clicked = False
+
     while True:
 
         basic("store", hero)
 
         if return_button.draw():
+            while pygame.mouse.get_pressed()[0]:  # Aguarda soltar clique
+                pygame.event.pump()
             city()
+            return
 
         if potion_button.draw():
 
@@ -310,6 +327,8 @@ def forge():
         basic("forge", hero)
 
         if return_button.draw():
+            while pygame.mouse.get_pressed()[0]:  # Aguarda soltar clique
+                pygame.event.pump()
             city()
 
         if potion_button.draw():

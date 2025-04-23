@@ -6,7 +6,7 @@ from utils.variables import *
 pygame.init()
 
 
-# # Draw Background
+# Draw Background
 def draw_bg(place, size=None):
     background = pygame.image.load(
         f"assets/Background/background_{place}.png"
@@ -91,22 +91,37 @@ def draw_turn_indicator(name):
     screen.blit(turn_text, (screen_width // 2 - turn_text.get_width() // 2, 20))
 
 
+# Draw Missions panel
 def draw_mission_panel(missions):
-    y_offset = 50  # screen_height - bottom_pannel - 35
-
-    aux = missions
+    if not missions:
+        return
 
     mission_qtd = 3
+    panel_x = 540
+    panel_y = 10
+    panel_width = 250
+    panel_height = 35 * mission_qtd + 20
 
-    if len(aux) > mission_qtd:
-        aux = aux[:mission_qtd]
+    pygame.draw.rect(
+        screen, (0, 0, 0, 128), (panel_x, panel_y, panel_width, panel_height)
+    )
+    pygame.draw.rect(screen, yellow, (panel_x, panel_y, panel_width, panel_height), 2)
 
-    for mission in aux:
+    draw_text("Quests:", font, yellow, panel_x + 10, panel_y + 10)
+
+    aux = missions[:mission_qtd]
+
+    for i, mission in enumerate(aux):
         status = (
             "Completed"
             if mission.completed
             else f"{mission.current_count}/{mission.objective_count}"
         )
-        draw_text("Quest:", font, yellow, 625, 10)
-        draw_text(f"{mission.name} - {status}", font, yellow, 550, y_offset)
-        y_offset += 30
+        color = green if mission.completed else yellow
+        draw_text(
+            f"{mission.name} - {status}",
+            font,
+            color,
+            panel_x + 10,
+            panel_y + 35 + i * 25,
+        )

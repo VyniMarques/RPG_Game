@@ -100,6 +100,9 @@ defeat_img = pygame.image.load("assets/Icons/defeat.png").convert_alpha()
 
 # Quest
 quest_img = pygame.image.load("assets/Icons/quest.png").convert_alpha()
+quest_complete_img = pygame.image.load(
+    "assets/Icons/quest_complete.png"
+).convert_alpha()
 
 # ======== Load Character Images ========
 knight_img = pygame.image.load("assets/Characters/knight.png").convert_alpha()
@@ -113,8 +116,6 @@ monk_img = pygame.image.load("assets/Characters/monk.png").convert_alpha()
 priestess_img = pygame.image.load("assets/Characters/priestess.png").convert_alpha()
 
 mauler_img = pygame.image.load("assets/Characters/mauler.png").convert_alpha()
-
-
 
 
 # ======== Buttons ========
@@ -147,6 +148,8 @@ return_button = Button(screen, 0, 80, return_img, 64, 64)
 run_button = Button(screen, 0, 90, run_img, 64, 64)
 
 quest_button = Button(screen, 0, 100, quest_img, 64, 64)
+
+quest_complete_button = Button(screen, 0, 100, quest_complete_img, 64, 64)
 
 
 # ======== Character selectors ========
