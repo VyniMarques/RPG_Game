@@ -153,7 +153,7 @@ def city():
 
         if any(m.completed for m in mission_manager.missions):
             if quest_complete_button.draw():
-                mission_manager.complete_quest()
+                mission_manager.complete_quest(hero)
                 clicked = True
                 click_released = False
 

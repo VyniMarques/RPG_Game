@@ -1,13 +1,14 @@
 import random
 
 class Mission:
-    def __init__(self, name, description, objective_count, objective_type):
+    def __init__(self, name, description, objective_count, objective_type, reward=0):
         self.name = name
         self.description = description
         self.objective_count = objective_count
         self.current_count = 0
         self.objective_type = objective_type
         self.completed = False
+        self.reward = reward
 
     def update_progress(self):
         if not self.completed:
@@ -24,10 +25,10 @@ class Mission:
 class MissionManager:
     def __init__(self):
         self.possible_missions = [
-            Mission("Hunter", "Kill 2 enemies.", 2, "kill_enemy"),
-            Mission("Monster Hunter", "Kill 2 enemies.", 2, "kill_enemy"),
-            Mission("Monster Killer", "Kill 10 enemies.", 10, "kill_enemy"),
-            Mission("Monster Assasin", "Kill 15 enemies.", 15, "kill_enemy"),
+            Mission("Hunter", "Kill 2 enemies.", 2, "kill_enemy", 5),
+            Mission("Monster Hunter", "Kill 2 enemies.", 2, "kill_enemy", 5),
+            Mission("Monster Killer", "Kill 10 enemies.", 10, "kill_enemy", 15),
+            Mission("Monster Assasin", "Kill 15 enemies.", 15, "kill_enemy", 20),
         ]
         self.missions = []
 
@@ -44,7 +45,7 @@ class MissionManager:
             self.possible_missions.remove(new_quest)
             self.missions.append(new_quest)
 
-    def complete_quest(self):
+    def complete_quest(self, hero):
         
         completed_missions = [m for m in self.missions if m.completed]
         
@@ -54,6 +55,7 @@ class MissionManager:
                 print(f"  {m.name}")
             
             for m in completed_missions:
+                hero.gold += m.reward
                 self.missions.remove(m)
                 m.reset()
                 self.possible_missions.append(m)
