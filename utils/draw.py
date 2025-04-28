@@ -6,6 +6,20 @@ from utils.variables import *
 pygame.init()
 
 
+def draw_menu_screen():
+    screen.fill(black)
+    draw_bg("map", (800, 550))
+    clock.tick(fps)
+
+    texts = [
+        ("RPG Game", title, black, (350, 20)),
+        ("Select your hero:", font, black, (325, 65)),
+    ]
+
+    for text, font_used, color, pos in texts:
+        draw_text(text, font_used, color, pos[0], pos[1])
+
+
 # Draw Background
 def draw_bg(place, size=None):
     background = pygame.image.load(
@@ -24,9 +38,9 @@ def draw_text(text, font, text_col, x, y):
 
 # Draw Panel
 def draw_panel(hero, enemies):
-    screen.blit(panel_img, (0, screen_height - bottom_pannel))
+    screen.blit(panel_img, (0, SCREEN_HEIGHT - BOTTOM_PANEL))
     draw_text(
-        f"{hero.name} HP: {hero.hp}", font, red, 100, screen_height - bottom_pannel + 10
+        f"{hero.name} HP: {hero.hp}", font, red, 100, SCREEN_HEIGHT - BOTTOM_PANEL + 10
     )
 
     if enemies != None:
@@ -36,7 +50,7 @@ def draw_panel(hero, enemies):
                 font,
                 red,
                 550,
-                (screen_height - bottom_pannel + 10) + count * 60,
+                (SCREEN_HEIGHT - BOTTOM_PANEL + 10) + count * 60,
             )
 
 
@@ -62,10 +76,8 @@ class GoldText(pygame.sprite.Sprite):
 
 # Draw Hero name and health bar
 def draw_hero_hud(hero):
-    draw_text(str(hero.potions), font, red, 150, screen_height - bottom_pannel + 70)
-    #hero.health_bar.draw(hero.hp)
+    draw_text(str(hero.potions), font, red, 150, SCREEN_HEIGHT - BOTTOM_PANEL + 70)
     hero.health_bar.draw(hero.hp, hero.max_hp)
-
 
 
 # Draw and update a list of NPCs
@@ -90,7 +102,7 @@ def handle_cursor(npc, image, cursor_hidden, clicked, action=None):
 
 def draw_turn_indicator(name):
     turn_text = font.render(f"{name} Turn", True, white)
-    screen.blit(turn_text, (screen_width // 2 - turn_text.get_width() // 2, 20))
+    screen.blit(turn_text, (SCREEN_WIDTH // 2 - turn_text.get_width() // 2, 20))
 
 
 # Draw Missions panel
