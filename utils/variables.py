@@ -6,11 +6,11 @@ from utils.button import Button
 pygame.init()
 
 # ======== Game Window ========
-bottom_pannel = 150
-screen_width = 800
-screen_height = 400 + bottom_pannel
+BOTTOM_PANEL = 150
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 400 + BOTTOM_PANEL
 
-screen = pygame.display.set_mode((screen_width, screen_height))
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 programIcon = pygame.image.load("assets/Icons/espadas.png").convert_alpha()
 
 # ======== FPS ========
@@ -120,17 +120,17 @@ mauler_img = pygame.image.load("assets/Characters/mauler.png").convert_alpha()
 
 # ======== Buttons ========
 potion_button = Button(
-    screen, 100, screen_height - bottom_pannel + 70, potion_img, 64, 64
+    screen, 100, SCREEN_HEIGHT - BOTTOM_PANEL + 70, potion_img, 64, 64
 )
 potion_plus_button = Button(
-    screen, 600, screen_height - bottom_pannel + 70, potion_plus_b_img, 64, 64
+    screen, 600, SCREEN_HEIGHT - BOTTOM_PANEL + 70, potion_plus_b_img, 64, 64
 )
 strength_plus_button = Button(
-    screen, 600, screen_height - bottom_pannel + 70, strength_img, 64, 64
+    screen, 600, SCREEN_HEIGHT - BOTTOM_PANEL + 70, strength_img, 64, 64
 )
 
 defense_plus_button = Button(
-    screen, 500, screen_height - bottom_pannel + 70, defense_img, 64, 64
+    screen, 500, SCREEN_HEIGHT - BOTTOM_PANEL + 70, defense_img, 64, 64
 )
 
 restart_button = Button(screen, 330, 120, restart_img, 120, 30)
@@ -157,7 +157,7 @@ knight_button = Button(screen, 100, 100, knight_img, 165, 165)
 
 archer_button = Button(screen, 100, 285, archer_img, 165, 165)
 
-assasin_button = Button(screen, 330, 100, assasin_img, 165, 165)
+assassin_button = Button(screen, 330, 100, assasin_img, 165, 165)
 
 monk_button = Button(screen, 315, 285, monk_img, 170, 170)
 
@@ -165,9 +165,19 @@ priestess_button = Button(screen, 550, 100, priestess_img, 165, 165)
 
 mauler_button = Button(screen, 550, 285, mauler_img, 165, 165)
 
+hero_buttons = [
+    knight_button,
+    archer_button,
+    assassin_button,
+    monk_button,
+    priestess_button,
+    mauler_button,
+]
+
+
 positions = [(530, 270), (700, 270)]
 
 health_bar_positions = [
-    (550, screen_height - bottom_pannel + 40),
-    (550, screen_height - bottom_pannel + 100),
+    (550, SCREEN_HEIGHT - BOTTOM_PANEL + 40),
+    (550, SCREEN_HEIGHT - BOTTOM_PANEL + 100),
 ]
