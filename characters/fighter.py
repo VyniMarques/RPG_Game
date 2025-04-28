@@ -3,19 +3,9 @@ import random
 
 from utils.healthBar import HealthBar
 from utils.combat import DamageText
+from utils.variables import *
 
 pygame.init()
-
-# ======== Game Window ========
-bottom_pannel = 150
-screen_width = 800
-screen_height = 400 + bottom_pannel
-
-screen = pygame.display.set_mode((screen_width, screen_height))
-
-red = (255, 0, 0)
-font = pygame.font.SysFont("Times New Roman", 26)
-
 
 class Fighter:
     def __init__(
@@ -47,6 +37,11 @@ class Fighter:
         self.update_time = pygame.time.get_ticks()
         self.scale_factor = scale_factor
 
+        self.q_idle = q_idle
+        self.q_hurt = q_hurt
+        self.q_death = q_death
+        self.q_attack = q_attack
+
         self.counted_for_mission = False
 
         self.image = pygame.Surface((50, 50))
@@ -59,7 +54,7 @@ class Fighter:
 
         # ======== Health bar ========
         self.health_bar = HealthBar(
-            100, screen_height - bottom_pannel + 40, self.hp, self.max_hp
+            100, SCREEN_HEIGHT - BOTTOM_PANEL + 40, self.hp, self.max_hp
         )
 
         # Load idle images
