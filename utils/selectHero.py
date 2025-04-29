@@ -83,8 +83,6 @@ hero_configs = [
 
 
 def selectHero(hero_op):
-    global hero, hero_in_city
-
     print("Selecting Hero")
 
     config = hero_configs[hero_op]
@@ -106,7 +104,7 @@ def selectHero(hero_op):
 
     hero_in_city = create_hero_in_city(hero, config)
 
-    print(f"Heroi selected: {hero.name}")
+    print(f"Hero selected: {hero.name}")
 
     return hero, hero_in_city
 

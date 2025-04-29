@@ -10,6 +10,7 @@ from utils.combat import (
     playerTurn,
     enemyTurn,
     gameOver,
+    BattleState,
 )
 
 from utils.draw import (
@@ -38,7 +39,6 @@ mission_manager = MissionManager()
 
 
 def menu():
-    global hero, hero_in_city
     pygame.mouse.set_visible(True)
 
     while True:
@@ -48,14 +48,12 @@ def menu():
         if hero_op is not None:
             hero, hero_in_city = selectHero(hero_op)
             pygame.time.delay(200)
-            city()
-            break
-
+            return hero, hero_in_city
         handle_events()
         pygame.display.update()
 
 
-def map():
+def map(hero, hero_in_city):
     pygame.mouse.set_visible(True)
     clicked = False
 
@@ -74,10 +72,10 @@ def map():
                 while pygame.mouse.get_pressed()[0]:
                     pygame.event.pump()
                 if place == "city":
-                    city()
+                    city(hero, hero_in_city)
                     break
                 else:
-                    combat(place)
+                    combat(place, hero, hero_in_city)
                     break
 
         if potion_button.draw():
@@ -90,10 +88,11 @@ def map():
         pygame.display.update()
 
 
-def city():
+def city(hero, hero_in_city):
     pygame.mouse.set_visible(True)
     cursor_hidden = False
     clicked = False
+    click_released = True
 
     npcs = [hero_in_city, blacksmith, merchant, beggar, dog]
 
@@ -101,7 +100,7 @@ def city():
         basic("city", hero)
 
         actions = {
-            map_button: map,
+            map_button: lambda: map(hero, hero_in_city),
         }
 
         for button, action in actions.items():
@@ -121,56 +120,64 @@ def city():
 
         mouse_buttons = pygame.mouse.get_pressed()
 
-        if quest_button.draw() and len(mission_manager.missions) < 3:
-            print("Botão de missão clicado!")
-            mission_manager.get_new_quest()
-            print(f"Missões ativas: {[m.name for m in mission_manager.missions]}")
+        if not mouse_buttons[0]:
+            click_released = True
+
+        if not clicked and click_released:
+            if quest_button.draw() and len(mission_manager.missions) < 3:
+                print("Botão de missão clicado!")
+                mission_manager.get_new_quest()
+                print(f"Missões ativas: {[m.name for m in mission_manager.missions]}")
+                clicked = True
+                click_released = False
 
         if (
             any(m.completed for m in mission_manager.missions)
             and quest_complete_button.draw()
         ):
             mission_manager.complete_quest(hero)
+            click_released = False
 
-        cursor_hidden = False
-
+        # NPC mouse icon and click logic
         npc_actions = {
             merchant: (potion_plus_img, store),
             blacksmith: (forge_img, forge),
         }
 
+        collided = False
+
         for npc, (img, action) in npc_actions.items():
             if npc.rect.collidepoint(pos):
-                handle_cursor(npc, img, cursor_hidden, False, action)
+                handle_cursor(npc, img, cursor_hidden, clicked, action)
                 cursor_hidden = True
+                collided = True
 
-                if mouse_buttons[0]:
+                if mouse_buttons[0] and click_released:
                     while pygame.mouse.get_pressed()[0]:
                         pygame.event.pump()
                     action()
+                    clicked = True
+                    click_released = False
                     break
 
-        if not cursor_hidden:
+        if not collided:
             pygame.mouse.set_visible(True)
+            cursor_hidden = False
 
         clicked = handle_events()
 
         pygame.display.update()
 
 
-def combat(place):
-    # Globals to control battle state
-    global game_over, current_fighter, action_cooldown
-
+def combat(place, hero, hero_in_city):
     pygame.mouse.set_visible(True)
 
-    # Initial Setup
     enemy_list = enemy_options1 if place == "forest" else enemy_options2
     enemies, health_bars = selectEnemies(enemy_list)
 
     hero_turn = 0
     enemy_turn = 0
-    game_over = 0
+    battle_state = BattleState()
 
     def wait_for_mouse_release():
         while pygame.mouse.get_pressed()[0]:
@@ -187,18 +194,17 @@ def combat(place):
 
         pos = pygame.mouse.get_pos()
 
-        # Run is only available on hero turn
-        if game_over == 0:
-            if run_button.draw() and current_fighter == 1:
+        if battle_state.game_over == 0:
+            if run_button.draw() and battle_state.current_fighter == 1:
                 wait_for_mouse_release()
-                reset_battle(hero, enemies)
-                city()
+                reset_battle(hero, enemies, battle_state)
+                city(hero, hero_in_city)
                 break
 
-            if current_fighter == 1:
+            if battle_state.current_fighter == 1:
                 draw_turn_indicator("Hero")
             else:
-                current_enemy = enemies[current_fighter - 2]
+                current_enemy = enemies[battle_state.current_fighter - 2]
                 draw_turn_indicator(current_enemy.name)
 
             draw_mission_panel(mission_manager.missions)
@@ -217,56 +223,51 @@ def combat(place):
         # Draw damage text
         text_update(damage_text_group, screen)
 
-        # Change mouse icon
+        # Change the mouse icon
         hide_mouse(pos, enemies)
 
         # Target enemy
         attack, target = getTarget(enemies, pos)
 
-        if game_over == 0:
-            # Player
-            hero_turn, game_over, current_fighter, action_cooldown = playerTurn(
+        if battle_state.game_over == 0:
+            # Player Turn
+            hero_turn, battle_state = playerTurn(
                 hero,
                 hero_turn,
                 target,
                 damage_text_group,
-                current_fighter,
-                action_cooldown,
+                battle_state,
                 attack,
                 potion,
             )
 
-            # Enemy
+            # Enemies Turn
             for count, enemy in enumerate(enemies):
-                enemy_turn, game_over, current_fighter, action_cooldown = enemyTurn(
+                enemy_turn, battle_state = enemyTurn(
                     enemy,
                     enemy_turn,
                     hero,
                     damage_text_group,
-                    current_fighter,
-                    action_cooldown,
+                    battle_state,
                     count,
                 )
                 mission_manager.check_quests(enemy)
 
             # If all fighters have had a turn then reset
-            if current_fighter > total_fighters:
-                current_fighter = 1
+            if battle_state.current_fighter > total_fighters:
+                battle_state.current_fighter = 1
 
         # Check if game is over
-        game_over, current_fighter = gameOver(
-            hero, enemies, city, game_over, current_fighter
+        battle_state = gameOver(
+            hero, enemies, lambda: city(hero, hero_in_city), battle_state
         )
 
-        if game_over:
-            # Reset the counted for mission
+        if battle_state.game_over:
             for enemy in enemies:
                 enemy.counted_for_mission = False
 
-        # Eventos gerais
         clicked = handle_events()
 
-        # Atualiza tela
         pygame.display.update()
 
 
@@ -284,7 +285,7 @@ def store():
         if return_button.draw():
             while pygame.mouse.get_pressed()[0]:  # Aguarda soltar clique
                 pygame.event.pump()
-            city()
+            city(hero, hero_in_city)
             return
 
         if potion_button.draw():
@@ -330,7 +331,7 @@ def forge():
         if return_button.draw():
             while pygame.mouse.get_pressed()[0]:  # Aguarda soltar clique
                 pygame.event.pump()
-            city()
+            city(hero, hero_in_city)
 
         if potion_button.draw():
             potion = True
@@ -373,4 +374,6 @@ def forge():
         pygame.display.update()
 
 
-menu()
+if __name__ == "__main__":
+    hero, hero_in_city = menu()
+    city(hero, hero_in_city)
